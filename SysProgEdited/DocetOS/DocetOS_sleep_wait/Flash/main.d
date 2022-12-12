@@ -1,0 +1,10 @@
+.\flash\main.o: main.c
+.\flash\main.o: .\OS\os.h
+.\flash\main.o: .\OS\task.h
+.\flash\main.o: c:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\flash\main.o: c:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\flash\main.o: sleep.h
+.\flash\main.o: c:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\flash\main.o: utils/config.h
+.\flash\main.o: simpleRoundRobin.h
+.\flash\main.o: mutex.h
