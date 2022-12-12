@@ -24,13 +24,11 @@ typedef struct {
 	OS_TCB_t const * (* scheduler_callback)(void);
 	void (* addtask_callback)(OS_TCB_t * const newTask);
 	void (* taskexit_callback)(OS_TCB_t * const task);
-	void (* wait_callback) (void * const reason, uint32_t checkcode, uint_fast8_t typecode);
-	void (* notify_callback) (void * const reason, uint_fast8_t typecode);
+	void (* wait_callback) (void * const reason, uint32_t checkcode);
+	void (* notify_callback) (void * const reason);
 } OS_Scheduler_t;
 
-/*Definitions for the wait/notify functions */
-#define MUTEX_CODE 0
-#define SEMAPHORE_CODE 1 
+
 
 
 /***************************/
@@ -78,10 +76,10 @@ void __svc(OS_SVC_ADD_TASK) OS_addTask(OS_TCB_t const * const);
 void __svc(OS_SVC_YIELD) OS_yield(void);
 
 /* SVC delegate to wait the current task */
-void __svc(OS_SVC_WAIT) OS_wait(void * const reason, uint32_t checkcode, uint_fast8_t typecode);
+void __svc(OS_SVC_WAIT) OS_wait(void * const reason, uint32_t checkcode);
 
 /* SVC delegate to notify tasks */
-void __svc(OS_SVC_NOTIFY) OS_notify(void * const reason, uint_fast8_t typecode);
+void __svc(OS_SVC_NOTIFY) OS_notify(void * const reason);
 
 /*Returns the OS check code */
 uint32_t OS_getCheckCode(void);

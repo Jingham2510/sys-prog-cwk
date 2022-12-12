@@ -131,7 +131,7 @@ void _svc_OS_task_exit(void) {
 
 /* SVC handler to wait a task. Invokes a callback to do the work. */
 void _svc_OS_wait(_OS_SVC_StackFrame_t const * const stack){	
-	_scheduler->wait_callback((OS_TCB_t *)stack->r0, (uint32_t)stack->r1, (uint_fast8_t) stack->r2);
+	_scheduler->wait_callback((OS_TCB_t *)stack->r0, (uint32_t)stack->r1);
 
 }
 
@@ -140,7 +140,7 @@ void _svc_OS_notify(_OS_SVC_StackFrame_t const * const stack){
 	
 	//Increment the checkcode
 	OS_checkcode += 1;
-	_scheduler->notify_callback((OS_TCB_t *)stack->r0, (uint_fast8_t) stack->r1);
+	_scheduler->notify_callback((OS_TCB_t *)stack->r0);
 	
 }
 

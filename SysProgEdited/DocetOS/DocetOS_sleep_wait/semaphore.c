@@ -38,7 +38,7 @@ void OS_sempahore_acquire(OS_semaphore_t * semaphore){
 			__CLREX();
 			
 			//Wait the task
-			OS_wait(semaphore, OS_getCheckCode(), SEMAPHORE_CODE);	
+			OS_wait(semaphore, OS_getCheckCode());	
 		}	
 	}
 }
@@ -52,14 +52,14 @@ void OS_semaphore_add_token(OS_semaphore_t * semaphore){
 	//Runs until the token count has been increased
 	while(!complete){
 	
-		uint_fast8_t token_count = __LDREX(&(semaphore->counter));
+		uint_fast8_t token_count = __LDREXW(&(semaphore->counter));
 		
 		token_count = token_count + 1;
 		
 		complete = !(__STREXW(token_count, &(semaphore->counter)));
 		
 		if(complete){			
-			OS_notify(semaphore, SEMAPHORE_CODE);
+			OS_notify(semaphore);
 		}
 	
 	

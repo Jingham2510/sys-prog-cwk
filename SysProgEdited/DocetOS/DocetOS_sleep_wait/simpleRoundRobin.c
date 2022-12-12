@@ -19,8 +19,8 @@ static OS_TCB_t const * simpleRoundRobin_scheduler(void);
 static void simpleRoundRobin_addTask(OS_TCB_t * const tcb);
 static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb);
 
-static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode, uint_fast8_t typecode);
-static void simpleRoundRobin_notify(void * const reason, uint_fast8_t typecode);
+static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode);
+static void simpleRoundRobin_notify(void * const reason);
 
 
 static OS_TCB_t * tasks[SIMPLE_RR_MAX_TASKS] = {0};
@@ -93,24 +93,26 @@ static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb) {
 
 
 //"wait" task callback
-static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode, uint_fast8_t typecode){
+static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode){
 	
 	if(checkcode == OS_getCheckCode()){	
+
+		
 		OS_currentTCB()->data = (uint32_t) reason;
-			
-				
+						
 		//Set the waiting flag high
 		OS_currentTCB()->state |= TASK_STATE_WAITING;
 		
 		//Invoke the scheduler to context switch
 		SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+		
 	}	
 	
 }
 
 
 //"notify" task callback
-static void simpleRoundRobin_notify(void * const reason, uint_fast8_t typecode){
+static void simpleRoundRobin_notify(void * const reason){
 
 	static int i = 0;
 	

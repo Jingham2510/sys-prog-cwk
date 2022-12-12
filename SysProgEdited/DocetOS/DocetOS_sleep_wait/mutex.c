@@ -32,7 +32,7 @@ void OS_mutex_acquire(OS_mutex_t * mutex){
 					mutex->counter += 1;
 			}			
 		}else if(curr_mutex_TCB != OS_currentTCB()){		
-			OS_wait(mutex, OS_getCheckCode(), MUTEX_CODE);				
+			OS_wait(mutex, OS_getCheckCode());				
 		}else{			
 			mutex->counter += 1;
 			complete = 1;
@@ -51,7 +51,7 @@ void OS_mutex_release(OS_mutex_t * mutex){
 		mutex->counter -= 1;
 		if (mutex->counter == 0){		
 			mutex->TCB_pointer = NULL;		
-			OS_notify(mutex, MUTEX_CODE);					
+			OS_notify(mutex);					
 		}
 	}	
 }
