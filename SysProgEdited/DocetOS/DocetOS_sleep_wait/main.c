@@ -4,24 +4,27 @@
 #include "utils/config.h"
 #include "simpleRoundRobin.h"
 #include "mutex.h"
+#include "semaphore.h"
 
 
 static OS_mutex_t mutex;
 
+static OS_semaphore_t semaphore;
+
 
 void task1(void const *const args) {
 	while (1) {
-		OS_mutex_acquire(&mutex);
+		OS_semaphore_acquire(&semaphore);
 		printf("Message from Task 1\r\n");
-		OS_mutex_release(&mutex);		
+		OS_semaphore_add_token(&semaphore);		
 	}
 }
 
 void task2(void const *const args) {
 	while (1) {		
-		OS_mutex_acquire(&mutex);
-		printf("Message from Task 2\r\n");		
-		OS_mutex_release(&mutex);
+		OS_semaphore_acquire(&semaphore);
+		printf("Message from Task 2\r\n");
+		OS_semaphore_add_token(&semaphore);		
 	}
 }
 
@@ -52,6 +55,8 @@ int main(void) {
 	OS_addTask(&TCB2);
 	
 	OS_mutex_init(&mutex);
+	
+	OS_semaphore_init(&semaphore, 1);
 	
 	
 	OS_start();

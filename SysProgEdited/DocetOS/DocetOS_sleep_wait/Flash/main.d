@@ -8,3 +8,4 @@
 .\flash\main.o: utils/config.h
 .\flash\main.o: simpleRoundRobin.h
 .\flash\main.o: mutex.h
+.\flash\main.o: semaphore.h

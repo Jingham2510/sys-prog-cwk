@@ -8,6 +8,7 @@
 ".\flash\sleep.o"
 ".\flash\mutex.o"
 ".\flash\semaphore.o"
+".\flash\mempool.o"
 ".\flash\hardfault.o"
 ".\flash\startup_stm32f407xx.o"
 ".\flash\system_stm32f4xx.o"

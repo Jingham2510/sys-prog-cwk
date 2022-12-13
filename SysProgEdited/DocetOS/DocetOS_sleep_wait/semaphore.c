@@ -14,7 +14,7 @@ void OS_semaphore_init(OS_semaphore_t * semaphore, uint32_t start_count){
 
 
 //Attempts to acquire a semaphore token from the semaphore pot
-void OS_sempahore_acquire(OS_semaphore_t * semaphore){
+void OS_semaphore_acquire(OS_semaphore_t * semaphore){
 
 	uint_fast8_t complete = 0;
 
@@ -35,7 +35,8 @@ void OS_sempahore_acquire(OS_semaphore_t * semaphore){
 		//If there are no tokens left
 		else{
 			//Clear the exclusive access flag - we dont edit the token count
-			__CLREX();
+			__CLREX();		
+			
 			
 			//Wait the task
 			OS_wait(semaphore, OS_getCheckCode());	
