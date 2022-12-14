@@ -28,16 +28,16 @@ typedef struct mempool{
 }OS_mempool_t;
 
 //Initialises a memory pool structure
-void pool_init(OS_mempool_t *pool);
+void OS_pool_init(OS_mempool_t *pool);
 
 //Allocates a section of the pools memory
-void * pool_allocate(OS_mempool_t *pool);
+void * OS_pool_allocate(OS_mempool_t *pool);
 
 //Frees up a given items memory block and returns it back into the memory pool
-void pool_deallocate(OS_mempool_t *pool, void * item);
+void OS_pool_deallocate(OS_mempool_t *pool, void * item);
 
 
-#define pool_add pool_deallocate
+#define OS_pool_add OS_pool_deallocate
 
 
 

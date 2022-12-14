@@ -1,7 +1,7 @@
 #include "mempool.h"
 
 
-void pool_init(OS_mempool_t *pool){
+void OS_pool_init(OS_mempool_t *pool){
 	
 	//Initialise the pool and its mutex
 	pool->head = 0;
@@ -11,7 +11,7 @@ void pool_init(OS_mempool_t *pool){
 }
 
 
-void * pool_allocate(OS_mempool_t *pool){
+void * OS_pool_allocate(OS_mempool_t *pool){
 
 		//Before the task can claim memory, it needs to get the mutex
 		OS_mutex_acquire(&pool->mutex);
@@ -30,7 +30,7 @@ void * pool_allocate(OS_mempool_t *pool){
 		
 }
 
-void pool_deallocate(OS_mempool_t *pool, void *item){
+void OS_pool_deallocate(OS_mempool_t *pool, void *item){
 
 	//Acquire the pools mutex so before the pool can be edited
 	OS_mutex_acquire(&pool->mutex);

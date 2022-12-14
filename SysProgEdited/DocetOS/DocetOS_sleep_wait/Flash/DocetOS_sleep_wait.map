@@ -39,7 +39,9 @@ Section Cross References
     mutex.o(.text) refers to os.o(.text) for OS_currentTCB
     semaphore.o(.text) refers to os.o(.text) for OS_getCheckCode
     mempool.o(.text) refers to mutex.o(.text) for OS_mutex_init
-    circbuffer.o(.text) refers to mempool.o(.text) for pool_init
+    circbuffer.o(.text) refers to mempool.o(.text) for OS_pool_init
+    circbuffer.o(.text) refers to mutex.o(.text) for OS_mutex_init
+    circbuffer.o(.text) refers to semaphore.o(.text) for OS_semaphore_init
     circbuffer.o(.text) refers to os.o(.text) for OS_currentTCB
     circbuffer.o(.text) refers to strncpy.o(.text) for strncpy
     hardfault.o(.emb_text) refers to hardfault.o(.text) for HardFault_HandlerC
@@ -193,12 +195,12 @@ Removing Unused input sections from the image.
     Removing semaphore.o(.revsh_text), (4 bytes).
     Removing semaphore.o(.rrx_text), (6 bytes).
     Removing mempool.o(.text), (72 bytes).
-    Removing circbuffer.o(.text), (198 bytes).
+    Removing circbuffer.o(.text), (254 bytes).
     Removing system_stm32f4xx.o(.rev16_text), (4 bytes).
     Removing system_stm32f4xx.o(.revsh_text), (4 bytes).
     Removing system_stm32f4xx.o(.rrx_text), (6 bytes).
 
-28 unused section(s) (total 424 bytes) removed from the image.
+28 unused section(s) (total 480 bytes) removed from the image.
 
 ==============================================================================
 

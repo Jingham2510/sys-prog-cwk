@@ -557,11 +557,6 @@
               <FileType>1</FileType>
               <FilePath>.\circbuffer.c</FilePath>
             </File>
-            <File>
-              <FileName>taskcommsqueue.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\taskcommsqueue.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1132,11 +1127,6 @@
               <FileName>circbuffer.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\circbuffer.c</FilePath>
-            </File>
-            <File>
-              <FileName>taskcommsqueue.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\taskcommsqueue.h</FilePath>
             </File>
           </Files>
         </Group>
