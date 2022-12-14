@@ -4,8 +4,9 @@
 #include <stdint.h>
 #include "os.h"
 
-//Whats the max amount of waiting tasks?
-#define MAX_TASKS 8 
+
+//What is the max amount of waiting tasks?
+#define SEM_MAX_TASKS 8 
 
 
 //Definition of a sempahore
@@ -15,7 +16,7 @@ typedef struct semaphore{
 	uint32_t counter;
 	
 	//Keeps a list of the current waiting tasks
-	OS_TCB_t * waiting_tasks[MAX_TASKS];
+	OS_TCB_t * waiting_tasks[SEM_MAX_TASKS];
 
 	//Keeps count of how many tasks are waiting
 	uint_fast8_t waiting_count;

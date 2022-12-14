@@ -4,20 +4,31 @@
 #include "mutex.h"
 #include "semaphore.h"
 #include <stddef.h>
+#include "mempool.h"
+
+
+/* The buffer size */
+#define BUFFSIZE  8
 
 
 //A circular buffer implemented as a queue of void pointers
+//These void pointers point to data packets
 
 /*Structure of the circular buffer*/
 typedef struct circbuffer{
+	
+	//The queue itself
+	void * queue[BUFFSIZE];
+	
 	//The head of the buffer
-	void *head;
+	uint_fast8_t head;
 	
 	//The tail of the buffer
-	void *tail;
-
-	//The size of the circular buffer
-	uint_fast8_t buffsize;	
+	uint_fast8_t tail;
+	
+	//The memory which the pointers point to 
+	OS_mempool_t mempool;
+	
 
 }OS_circbuffer_t;
 
@@ -26,12 +37,12 @@ typedef struct circbuffer{
 void circbuffer_init(OS_circbuffer_t * buff);
 
 
-//Add a pointer to the circular buffer
-void circbuffer_add(OS_circbuffer_t * buff, void *item);
+//Add some data to the circular buffer
+uint_fast8_t circbuffer_add(OS_circbuffer_t * buff, char data[10]);
 
 
-//Remove a pointer from the cicular buffer
-void *circbuffer_get(OS_circbuffer_t * buff);
+//Remove a pointer from the cicular buffer - and return the data associated with it 
+uint_fast8_t  circbuffer_get(OS_circbuffer_t * buff, mempool_datapacket_t *packet_pointer);
 
 
 

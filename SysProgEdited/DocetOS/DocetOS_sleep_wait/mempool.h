@@ -4,6 +4,21 @@
 #include <stddef.h>
 #include "mutex.h"
 
+
+
+#define DATALENGTH 10
+
+
+/*Data packet that could be stored in the memory pool*/
+typedef struct {
+	uint32_t id;
+	char data[DATALENGTH];
+	
+}mempool_datapacket_t;
+
+
+
+
 /* Structure of the memory pool */
 typedef struct mempool{
 	//Head of the memory pool
@@ -20,7 +35,6 @@ void * pool_allocate(OS_mempool_t *pool);
 
 //Frees up a given items memory block and returns it back into the memory pool
 void pool_deallocate(OS_mempool_t *pool, void * item);
-
 
 
 #define pool_add pool_deallocate
