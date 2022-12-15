@@ -77,6 +77,10 @@ void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func
 	TCB->priority = TCB->state = TCB->data = 0;
 	OS_StackFrame_t *sf = (OS_StackFrame_t *)(TCB->sp);
 	memset(sf, 0, sizeof(OS_StackFrame_t));
+	
+	//Initialise the next task pointer as 0 - let the schedulr do the lifting
+	TCB->next_task_pointer = NULL;		
+	
 	/* By placing the address of the task function in pc, and the address of _OS_task_end() in lr, the task
 	   function will be executed on the first context switch, and if it ever exits, _OS_task_end() will be
 	   called automatically */

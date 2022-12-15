@@ -27,7 +27,7 @@ typedef struct s_StackFrame {
 	volatile uint32_t psr;
 } OS_StackFrame_t;
 
-typedef struct {
+typedef struct OS_TCB_t{
 	/* Task stack pointer.  It's important that this is the first entry in the structure,
 	   so that a simple double-dereference of a TCB pointer yields a stack pointer. */
 	void * volatile sp;
@@ -40,6 +40,11 @@ typedef struct {
 	   you like. */
 	uint32_t volatile priority;
 	uint32_t volatile data;
+	
+	/*The link to the next task for the task queue*/
+	struct OS_TCB_t *next_task_pointer;
+	
+	
 } OS_TCB_t;
 
 /* Constants that define bits in a thread's 'state' field. */
