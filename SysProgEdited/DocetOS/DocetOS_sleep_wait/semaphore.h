@@ -15,11 +15,9 @@ typedef struct semaphore{
 	//A counter of the number of tokens
 	volatile uint32_t counter;
 	
-	//Keeps a list of the current waiting tasks
-	OS_TCB_t * waiting_tasks[SEM_MAX_TASKS];
+	//The head of the waiting tasks linked list
+	OS_TCB_t * head_waiting_task;
 
-	//Keeps count of how many tasks are waiting
-	uint_fast8_t waiting_count;
 
 }OS_semaphore_t;
 

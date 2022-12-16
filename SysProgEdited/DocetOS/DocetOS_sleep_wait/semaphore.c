@@ -8,8 +8,10 @@ void OS_semaphore_init(OS_semaphore_t * semaphore, uint32_t start_count){
 
 	semaphore->counter = start_count;
 	
-	semaphore->waiting_count = 0;
-
+	
+	semaphore->head_waiting_task = NULL;
+	
+	
 }
 
 
@@ -38,8 +40,23 @@ void OS_semaphore_acquire(OS_semaphore_t * semaphore){
 			__CLREX();		
 			
 			
+			
+			//Add the task to the waiting task list
+			if(semaphore->head_waiting_task == NULL){			
+				semaphore->head_waiting_task = OS_currentTCB();			
+			}
+			else{
+				OS_TCB_t * curr_task = semaphore->head_waiting_task;
+				//Go to the last task in the waiting queue
+				while(curr_task->next_task_pointer != NULL){
+					curr_task = curr_task->next_task_pointer;				
+				}
+				curr_task->next_task_pointer = OS_currentTCB();			
+			}			
+			
 			//Wait the task
 			OS_wait(semaphore, OS_getCheckCode());	
+				
 		}	
 	}
 }
@@ -50,6 +67,8 @@ void OS_semaphore_add_token(OS_semaphore_t * semaphore){
 
 	uint_fast8_t complete = 0;
 	
+	
+	
 	//Runs until the token count has been increased
 	while(!complete){
 	
@@ -59,10 +78,26 @@ void OS_semaphore_add_token(OS_semaphore_t * semaphore){
 		
 		complete = !(__STREXW(token_count, &(semaphore->counter)));
 		
-		if(complete){			
-			OS_notify(semaphore);
+		if(complete){		
+			
+				//Only notify if there are tasks waiting
+				if(semaphore->head_waiting_task != NULL){
+					
+					OS_TCB_t * task_to_notify = semaphore->head_waiting_task;						
+					
+					//The sempahore then updates the waiting task list (to replace the head)
+					if(semaphore->head_waiting_task->next_task_pointer != NULL){
+						semaphore->head_waiting_task = semaphore->head_waiting_task->next_task_pointer;
+					}
+					else{
+						semaphore->head_waiting_task = NULL;
+					}
+					
+					//The OS removes the waiting flag from the task (which is always the head)
+					OS_notify(task_to_notify);
+				
+			}
 		}
-	
 	
 	}
 	

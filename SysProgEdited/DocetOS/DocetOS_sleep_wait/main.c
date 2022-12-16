@@ -15,7 +15,7 @@ static OS_semaphore_t semaphore;
 void task1(void const *const args) {
 	while(1){
 		OS_semaphore_acquire(&semaphore);
-		printf("Message from Task 1\r\n");
+		printf("T1\r\n");
 		OS_semaphore_add_token(&semaphore);		
 	}
 }
@@ -23,7 +23,7 @@ void task1(void const *const args) {
 void task2(void const *const args) {
 	while (1) {		
 		OS_semaphore_acquire(&semaphore);
-		printf("Message from Task 2\r\n");
+		printf("T2\r\n");
 		OS_semaphore_add_token(&semaphore);		
 	}
 }
@@ -37,7 +37,7 @@ int main(void) {
 	/* Set up core clock and initialise serial port */
 	config_init();
 
-	printf("\r\nDocetOS Sleep and Mutex\r\n");
+	printf("\r\nDocetOS - Systems Assesment\r\n");
 
 	/* Reserve memory for two stacks and two TCBs.
 	   Remember that stacks must be 8-byte aligned. */

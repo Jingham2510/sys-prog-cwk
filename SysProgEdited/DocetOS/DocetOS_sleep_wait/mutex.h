@@ -14,7 +14,10 @@ typedef struct mutex{
 	OS_TCB_t *TCB_pointer;	
 	uint32_t counter;	
 	
-	OS_TCB_t * waiting_tasks[MAX_TASKS];
+	//The head of the waiting tasks linked list
+	OS_TCB_t * head_waiting_task;
+	
+	uint_fast8_t waiting_count;
 	
 	
 }OS_mutex_t;

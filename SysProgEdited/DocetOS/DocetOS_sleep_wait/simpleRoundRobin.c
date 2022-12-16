@@ -20,16 +20,17 @@ static void simpleRoundRobin_addTask(OS_TCB_t * const tcb);
 static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb);
 
 static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode);
-static void simpleRoundRobin_notify(void * const reason);
+static void simpleRoundRobin_notify(OS_TCB_t * task_to_notify);
 
-/* REMOVE THIS ONCE LINKED LIST IMPLEMENTED AND WORKS */
-static OS_TCB_t * tasks[SIMPLE_RR_MAX_TASKS] = {0};
+
 
 //The task at the head of the task linked list -if none, set to idle
 static OS_TCB_t *head_task;
 
-//A count to keep track of the number of tasks - starts at 0
+//A count to keep track of the number of tasks
 static uint32_t task_count = 0;
+//A count to keep track of the number of waiting tasks
+static uint32_t waiting_task_count = 0;
 
 /* Scheduler block for the simple round-robin */
 OS_Scheduler_t const simpleRoundRobinScheduler = {
@@ -52,7 +53,7 @@ static OS_TCB_t const * simpleRoundRobin_scheduler(void) {
 	OS_TCB_t * next_task;
 	
 	//Check to see if any task is available to run
-	for (uint_fast8_t j = 1; j <= task_count; j++){
+	for (uint_fast8_t j = 1; j <= (task_count - waiting_task_count); j++){
 	
 		//Check to make sure there is a next task
 		if(curr_task->next_task_pointer == NULL){
@@ -61,38 +62,23 @@ static OS_TCB_t const * simpleRoundRobin_scheduler(void) {
 		}
 		else{
 			next_task = curr_task->next_task_pointer;
-		}
+		}		
 		
-		//Check if the task isn't waiting
-		if(!(next_task->state & TASK_STATE_WAITING)){
-			
-			//Check to see if the task is sleeping/yielding
-			if(next_task->state & TASK_STATE_YIELD){
-				//If the task is sleeping - check to see if enough time has passed
-				if( (int32_t) (OS_elapsedTicks() - next_task->data) > 0){
-					//Clear the yeild flag and return the task
-					next_task->state &= ~TASK_STATE_YIELD;
-					return next_task;				
-				}			
-			}
-			else{
-				//If the task isn't waiting and isn't sleeping return it
+		//Check to see if the task is sleeping/yielding - as we know none of the tasks are waiting
+		if(next_task->state & TASK_STATE_YIELD){
+			//If the task is sleeping - check to see if enough time has passed
+			if( (int32_t) (OS_elapsedTicks() - next_task->data) > 0){
+				//Clear the yeild flag and return the task
+				next_task->state &= ~TASK_STATE_YIELD;
 				return next_task;				
-			}
-			
-			
-		
+			}			
 		}
-		
-		
-		
-	
+		else{
+			//If the task isn't waiting and isn't sleeping return it
+			return next_task;				
+		}	
 	
 	}
-	
-	
-	
-
 	// No tasks can be ran in the list, so return the idle task
 	return OS_idleTCB_p;
 }
@@ -177,6 +163,41 @@ static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode){
 	
 	if(checkcode == OS_getCheckCode()){	
 
+		OS_TCB_t * curr_task_check = head_task;
+		
+		
+		//Remove the current TCB from the ready task list then update its status		
+		for(uint_fast8_t i = 0; i <task_count; i++){
+			//If the task to be waited is the head task
+			if(i == 0){
+				if(OS_currentTCB() == curr_task_check){
+					head_task = OS_currentTCB()->next_task_pointer;
+					waiting_task_count = waiting_task_count + 1;
+					break;
+				}					
+			}
+			else{
+				//If the next task is the task to be waited - remove it from the list
+				if(curr_task_check->next_task_pointer == OS_currentTCB()){
+					OS_TCB_t *task_to_remove = curr_task_check->next_task_pointer;
+					
+					//Set the current tasks next pointer to be the task after the task to be removed
+					curr_task_check->next_task_pointer = curr_task_check->next_task_pointer->next_task_pointer;
+					//Set the task to be removed pointer to be null
+					task_to_remove->next_task_pointer = NULL;
+					
+					waiting_task_count = waiting_task_count + 1;
+					
+					break;
+				}		
+				
+				//If the code gets here something bad has happened!!!!!
+				//There is no matching task in the task list that is going to be waited
+				
+			}		
+		}
+		
+	
 		
 		OS_currentTCB()->data = (uint32_t) reason;
 						
@@ -192,27 +213,21 @@ static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode){
 
 
 //"notify" task callback
-static void simpleRoundRobin_notify(void * const reason){
+static void simpleRoundRobin_notify(OS_TCB_t * task_to_notify){
 
-	static int i = 0;
+	//Update the tasks status flags
+	task_to_notify->data = 0;
 	
-	//Loop through every task in the list
-	for (int j = 1; j <= SIMPLE_RR_MAX_TASKS; j++) {
-		i = (i + 1) % SIMPLE_RR_MAX_TASKS;
-		
-		//If the task is waiting and the reasons match - clear the waiting flag and the data
-		if((tasks[i]->state & TASK_STATE_WAITING) && (tasks[i]->data  == (uint32_t) reason)){
-			
-			tasks[i]->data = 0;
-			tasks[i]->state &= ~TASK_STATE_WAITING;	
+	task_to_notify->state &= ~TASK_STATE_WAITING;
 	
-
-
-			
-					
-		}		
+	//Put the task back in the ready-task linked list
+	OS_TCB_t * curr_task = head_task;
+	
+	while(curr_task->next_task_pointer != NULL){
+		curr_task = curr_task->next_task_pointer;	
 	}
 	
+	curr_task->next_task_pointer = task_to_notify;
 
 	
 }

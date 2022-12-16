@@ -144,7 +144,7 @@ void _svc_OS_notify(_OS_SVC_StackFrame_t const * const stack){
 	
 	//Increment the checkcode
 	OS_checkcode += 1;
-	_scheduler->notify_callback((OS_TCB_t *)stack->r0);
+	_scheduler->notify_callback((OS_TCB_t *) stack->r0);
 	
 }
 
