@@ -27,17 +27,11 @@ Project File Date:  12/14/2022
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'c:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'STM32F407 Flash'
-compiling main.c...
-compiling sleep.c...
-compiling mutex.c...
-compiling mempool.c...
-compiling circbuffer.c...
-compiling semaphore.c...
-compiling os.c...
 compiling simpleRoundRobin.c...
-linking...
-Program Size: Code=2840 RO-data=476 RW-data=160 ZI-data=2832  
-".\Flash\DocetOS_sleep_wait.axf" - 0 Error(s), 0 Warning(s).
+simpleRoundRobin.c(202): error:  #20: identifier "tasks" is undefined
+  		if((tasks[i]->state & TASK_STATE_WAITING) && (tasks[i]->data  == (uint32_t) reason)){
+simpleRoundRobin.c: 0 warnings, 1 error
+".\Flash\DocetOS_sleep_wait.axf" - 1 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -68,7 +62,8 @@ Package Vendor: Keil
       Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f407xx.s
       Source file:   MDK\Device\Source\ARM\STM32F4xx_OTP.s
       Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c
-Build Time Elapsed:  00:00:04
+Target not created.
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

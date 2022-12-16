@@ -13,7 +13,7 @@ static OS_semaphore_t semaphore;
 
 
 void task1(void const *const args) {
-	while (1) {
+	while(1){
 		OS_semaphore_acquire(&semaphore);
 		printf("Message from Task 1\r\n");
 		OS_semaphore_add_token(&semaphore);		

@@ -40,7 +40,7 @@ void OS_circbuffer_init(OS_circbuffer_t * buff){
 
 
 /* NOTE - CHAR CONST * LIKE ANDY SAID */
-void OS_circbuffer_add(OS_circbuffer_t * buff, char data[DATALENGTH]){
+void OS_circbuffer_add(OS_circbuffer_t * buff, char const * data){
 
 	//Acquire a semaphore token to resereve a spot in the queue
 	OS_semaphore_acquire(&buff->empty_semaphore);
@@ -52,8 +52,8 @@ void OS_circbuffer_add(OS_circbuffer_t * buff, char data[DATALENGTH]){
 	mempool_datapacket_t *packet = OS_pool_allocate(buff->mempool);
 	//The id is the current task (so the task that is putting the data in the queue)
 	packet->id = (uint32_t) OS_currentTCB();
-	/* NOTE: CHANGE TO STRNCPY_S ?? -- SHOULD AVOID COPYING ANYTHING AT ALL - COMPUTE RESULTS DIRECTLY*/
-	strncpy(packet->data, data, DATALENGTH);
+	
+	packet->data = data;
 	
 	
 	//Add the pointer to the packet to the queue

@@ -48,7 +48,7 @@ void OS_circbuffer_init(OS_circbuffer_t * buff);
 
 
 //Add some data to the circular buffer
-void OS_circbuffer_add(OS_circbuffer_t * buff, char data[10]);
+void OS_circbuffer_add(OS_circbuffer_t * buff, char const * data);
 
 
 //Remove a pointer from the cicular buffer - and return the data associated with it 

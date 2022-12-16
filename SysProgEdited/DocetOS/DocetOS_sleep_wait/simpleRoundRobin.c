@@ -46,10 +46,54 @@ OS_Scheduler_t const simpleRoundRobinScheduler = {
 /* Round-robin scheduler callback */
 static OS_TCB_t const * simpleRoundRobin_scheduler(void) {
 	
+	//Get the current TCB
+	OS_TCB_t * curr_task = OS_currentTCB();
+	
+	OS_TCB_t * next_task;
+	
+	//Check to see if any task is available to run
+	for (uint_fast8_t j = 1; j <= task_count; j++){
+	
+		//Check to make sure there is a next task
+		if(curr_task->next_task_pointer == NULL){
+			//If there isnt a next task, loop back to the head task
+			next_task = head_task;	
+		}
+		else{
+			next_task = curr_task->next_task_pointer;
+		}
+		
+		//Check if the task isn't waiting
+		if(!(next_task->state & TASK_STATE_WAITING)){
+			
+			//Check to see if the task is sleeping/yielding
+			if(next_task->state & TASK_STATE_YIELD){
+				//If the task is sleeping - check to see if enough time has passed
+				if( (int32_t) (OS_elapsedTicks() - next_task->data) > 0){
+					//Clear the yeild flag and return the task
+					next_task->state &= ~TASK_STATE_YIELD;
+					return next_task;				
+				}			
+			}
+			else{
+				//If the task isn't waiting and isn't sleeping return it
+				return next_task;				
+			}
+			
+			
+		
+		}
+		
+		
+		
+	
+	
+	}
+	
 	
 	
 
-	// No tasks in the list, so return the idle task
+	// No tasks can be ran in the list, so return the idle task
 	return OS_idleTCB_p;
 }
 

@@ -12,7 +12,8 @@
 /*Data packet that could be stored in the memory pool*/
 typedef struct {
 	uint32_t id;
-	char data[DATALENGTH];
+	//The data packet is read only once written
+	char const * data;
 	
 }mempool_datapacket_t;
 
