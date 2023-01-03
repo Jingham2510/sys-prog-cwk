@@ -26,8 +26,13 @@ void OS_semaphore_acquire(OS_semaphore_t * semaphore){
 		//Load the current number of tokens in the semaphore and check that it isnt empty
 		uint32_t token_count =  __LDREXW(&(semaphore->counter));
 		
+		//printf("%d", token_count);
+		
 		//If there are tokens left
 		if(token_count > 0){
+		
+				
+		
 				//Reduce the token count, and save it 		
 				token_count = token_count - 1;
 				
@@ -37,9 +42,9 @@ void OS_semaphore_acquire(OS_semaphore_t * semaphore){
 		//If there are no tokens left
 		else{
 			//Clear the exclusive access flag - we dont edit the token count
-			__CLREX();		
+			__CLREX();	
 			
-			
+			//printf("WAITING");
 			
 			//Add the task to the waiting task list
 			if(semaphore->head_waiting_task == NULL){			
@@ -65,9 +70,7 @@ void OS_semaphore_acquire(OS_semaphore_t * semaphore){
 //Adds a token to the semaphore pot
 void OS_semaphore_add_token(OS_semaphore_t * semaphore){
 
-	uint_fast8_t complete = 0;
-	
-	
+	uint_fast8_t complete = 0;	
 	
 	//Runs until the token count has been increased
 	while(!complete){
@@ -83,6 +86,9 @@ void OS_semaphore_add_token(OS_semaphore_t * semaphore){
 				//Only notify if there are tasks waiting
 				if(semaphore->head_waiting_task != NULL){
 					
+					
+					//printf("NOTIFYING");
+					
 					OS_TCB_t * task_to_notify = semaphore->head_waiting_task;						
 					
 					//The sempahore then updates the waiting task list (to replace the head)
@@ -93,7 +99,7 @@ void OS_semaphore_add_token(OS_semaphore_t * semaphore){
 						semaphore->head_waiting_task = NULL;
 					}
 					
-					//The OS removes the waiting flag from the task (which is always the head)
+					//The OS removes the waiting flag from the task
 					OS_notify(task_to_notify);
 				
 			}

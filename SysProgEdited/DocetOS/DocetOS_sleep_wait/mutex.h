@@ -17,8 +17,6 @@ typedef struct mutex{
 	//The head of the waiting tasks linked list
 	OS_TCB_t * head_waiting_task;
 	
-	uint_fast8_t waiting_count;
-	
 	
 }OS_mutex_t;
 

@@ -13,7 +13,7 @@
 typedef struct semaphore{
 
 	//A counter of the number of tokens
-	volatile uint32_t counter;
+	uint32_t counter;
 	
 	//The head of the waiting tasks linked list
 	OS_TCB_t * head_waiting_task;

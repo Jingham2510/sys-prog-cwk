@@ -20,7 +20,7 @@ static void simpleRoundRobin_addTask(OS_TCB_t * const tcb);
 static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb);
 
 static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode);
-static void simpleRoundRobin_notify(OS_TCB_t * task_to_notify);
+static void simpleRoundRobin_notify(OS_TCB_t * const task_to_notify);
 
 
 
@@ -161,7 +161,10 @@ static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb) {
 //"wait" task callback
 static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode){
 	
+	
 	if(checkcode == OS_getCheckCode()){	
+
+		
 
 		OS_TCB_t * curr_task_check = head_task;
 		
@@ -171,6 +174,7 @@ static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode){
 			//If the task to be waited is the head task
 			if(i == 0){
 				if(OS_currentTCB() == curr_task_check){
+							
 					head_task = OS_currentTCB()->next_task_pointer;
 					waiting_task_count = waiting_task_count + 1;
 					break;
@@ -182,7 +186,7 @@ static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode){
 					OS_TCB_t *task_to_remove = curr_task_check->next_task_pointer;
 					
 					//Set the current tasks next pointer to be the task after the task to be removed
-					curr_task_check->next_task_pointer = curr_task_check->next_task_pointer->next_task_pointer;
+					curr_task_check->next_task_pointer = task_to_remove->next_task_pointer;
 					//Set the task to be removed pointer to be null
 					task_to_remove->next_task_pointer = NULL;
 					
@@ -223,12 +227,20 @@ static void simpleRoundRobin_notify(OS_TCB_t * task_to_notify){
 	//Put the task back in the ready-task linked list
 	OS_TCB_t * curr_task = head_task;
 	
+	//If there are no active tasks
+	if (curr_task == NULL){	
+		head_task = task_to_notify;
+		waiting_task_count = waiting_task_count - 1;
+		return;
+	}
+	
+	//Finds the next slot in the linked list 
 	while(curr_task->next_task_pointer != NULL){
 		curr_task = curr_task->next_task_pointer;	
 	}
 	
 	curr_task->next_task_pointer = task_to_notify;
-
+	waiting_task_count = waiting_task_count - 1;
 	
 }
 
