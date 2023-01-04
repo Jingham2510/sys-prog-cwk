@@ -24,34 +24,39 @@ void task1(void const *const args) {
 	OS_mutex_acquire(&mutex);
 	
 	
+	OS_circbuffer_init(&commsqueue);
 	/*
-	
 	OS_pool_init(&mempool);
-	
 	mempool_datapacket_t poolElements[10];
 	
 	for (int i = 0; i < 10; ++i) {
 		OS_pool_add(&mempool, &poolElements[i]);
 	}
-	mempool_datapacket_t *packet = OS_pool_allocate(&mempool);	
+	mempool_datapacket_t *packet = OS_pool_allocate(&mempool);
 	
 	
 	packet->id = 10;
 	packet->data = 123;
 	
+	printf("POINTER TEST: %p\n",  packet);
 	printf("ID TEST %d \n", packet->id);
 	printf("DATA TEST %d \n", packet->data);
-	
-	OS_pool_deallocate(&mempool, &packet);
-	
-	*/	
-	
-	
-	OS_circbuffer_init(&commsqueue);
+	OS_circbuffer_add(&commsqueue, packet);	
+	*/
+
 	
 	
 	
-	OS_circbuffer_add(&commsqueue, 12);	
+	
+	uint32_t test = 100;
+
+	printf("%p\n", &test);
+	printf("%d\n", test);
+	
+	OS_circbuffer_add(&commsqueue, &test);
+	
+	
+	
 	
 	printf("-----Packet added-----\n");
 	
@@ -73,13 +78,21 @@ void task2(void const *const args) {
 	
 	OS_mutex_acquire(&mutex);
 	
-	mempool_datapacket_t packet1;
+	uint32_t * test = OS_circbuffer_get(&commsqueue);
 	
-	OS_circbuffer_get(&commsqueue, &packet1);
+	printf("TEST: %p\n", test);
 	
-	printf("Packet1 ID: %d \n", packet1.id);
-	printf("Packet1 Data: %d \n", packet1.data);
-
+	printf("TEST: %d\n", *test);
+	
+	
+	/*
+	mempool_datapacket_t  * packet_pointer = (mempool_datapacket_t *) OS_circbuffer_get(&commsqueue);
+		
+	printf("Packet pointer: %p\n", packet_pointer);
+	
+	printf("Packet1 ID: %d \n", packet_pointer->id);
+	printf("Packet1 Data: %d \n", packet_pointer->data);
+	*/
 	
 	
 	/*
