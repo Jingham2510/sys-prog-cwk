@@ -6,14 +6,14 @@
 
 
 
-#define DATALENGTH 10
+
 
 
 /*Data packet that could be stored in the memory pool*/
 typedef struct {
 	uint32_t id;
-	//The data packet is read only once written
-	char const * data;
+	
+	uint32_t data;
 	
 }mempool_datapacket_t;
 

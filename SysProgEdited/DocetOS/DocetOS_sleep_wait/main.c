@@ -6,27 +6,102 @@
 #include "mutex.h"
 #include "semaphore.h"
 #include <stm32f4xx.h>
+#include "circbuffer.h"
+#include "mempool.h"
 
 
 static OS_mutex_t mutex;
 
 static OS_semaphore_t semaphore;
 
+static OS_circbuffer_t commsqueue; 
+
+
+static OS_mempool_t mempool;
+
 
 void task1(void const *const args) {
-	while(1){
-		OS_semaphore_acquire(&semaphore);
-		printf("Q1\r\n");
-		OS_semaphore_add_token(&semaphore);		
+	OS_mutex_acquire(&mutex);
+	
+	
+	/*
+	
+	OS_pool_init(&mempool);
+	
+	mempool_datapacket_t poolElements[10];
+	
+	for (int i = 0; i < 10; ++i) {
+		OS_pool_add(&mempool, &poolElements[i]);
 	}
+	mempool_datapacket_t *packet = OS_pool_allocate(&mempool);	
+	
+	
+	packet->id = 10;
+	packet->data = 123;
+	
+	printf("ID TEST %d \n", packet->id);
+	printf("DATA TEST %d \n", packet->data);
+	
+	OS_pool_deallocate(&mempool, &packet);
+	
+	*/	
+	
+	
+	OS_circbuffer_init(&commsqueue);
+	
+	
+	
+	OS_circbuffer_add(&commsqueue, 12);	
+	
+	printf("-----Packet added-----\n");
+	
+	
+	
+	OS_mutex_release(&mutex);
+	
+	
+	/*
+	while(1){
+		OS_mutex_acquire(&mutex);
+		printf("Q1\r\n");
+		OS_mutex_release(&mutex);		
+	}
+	*/
 }
 
 void task2(void const *const args) {
-	while (1) {		
-		OS_semaphore_acquire(&semaphore);
-		printf("Q2\r\n");
-		OS_semaphore_add_token(&semaphore);		
+	
+	OS_mutex_acquire(&mutex);
+	
+	mempool_datapacket_t packet1;
+	
+	OS_circbuffer_get(&commsqueue, &packet1);
+	
+	printf("Packet1 ID: %d \n", packet1.id);
+	printf("Packet1 Data: %d \n", packet1.data);
+
+	
+	
+	/*
+	for(uint_fast8_t i = 0; i < packet.data; i++){
+			printf("%d", i);		
 	}
+	
+	*/
+	printf("Packet Read");
+	
+	OS_mutex_release(&mutex);	
+	
+	
+	/*
+	while (1) {		
+		OS_mutex_acquire(&mutex);
+		printf("Q2\r\n");
+		OS_mutex_release(&mutex);		
+	}
+	*/
+	
+	
 }
 
 /* MAIN FUNCTION */
@@ -58,6 +133,9 @@ int main(void) {
 	OS_mutex_init(&mutex);
 	
 	OS_semaphore_init(&semaphore, 1);
+	
+	
+	
 	
 	
 	OS_start();

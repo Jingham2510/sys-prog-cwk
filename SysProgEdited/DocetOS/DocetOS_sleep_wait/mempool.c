@@ -1,5 +1,7 @@
 #include "mempool.h"
 
+//NEED TO ADD CHECKS FOR MAKING SURE THERE IS MEMORY AVAILABLE
+
 
 void OS_pool_init(OS_mempool_t *pool){
 	
@@ -30,10 +32,12 @@ void * OS_pool_allocate(OS_mempool_t *pool){
 		
 }
 
+
 void OS_pool_deallocate(OS_mempool_t *pool, void *item){
 
 	//Acquire the pools mutex so before the pool can be edited
 	OS_mutex_acquire(&pool->mutex);
+	
 	
 	//Make the memory location of the item the new memory pool head
 	

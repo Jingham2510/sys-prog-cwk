@@ -11,6 +11,8 @@ void OS_mutex_init(OS_mutex_t * mutex){
 	
   mutex->TCB_pointer = NULL;
 	
+	mutex->head_waiting_task = NULL;
+	
 }
 
 
@@ -32,8 +34,25 @@ void OS_mutex_acquire(OS_mutex_t * mutex){
 					mutex->counter += 1;
 			}			
 		}else if(curr_mutex_TCB != OS_currentTCB()){		
+			__CLREX();
+			
+			//Add the task to the waiting task list
+			if(mutex->head_waiting_task == NULL){			
+				mutex->head_waiting_task = OS_currentTCB();			
+			}
+			else{
+				OS_TCB_t * curr_task = mutex->head_waiting_task;
+				//Go to the last task in the waiting queue
+				while(curr_task->next_task_pointer != NULL){
+					curr_task = curr_task->next_task_pointer;				
+				}
+				curr_task->next_task_pointer = OS_currentTCB();			
+			}			
+			
+			
 			OS_wait(mutex, OS_getCheckCode());				
 		}else{			
+			__CLREX();			
 			mutex->counter += 1;
 			complete = 1;
 			
@@ -51,7 +70,26 @@ void OS_mutex_release(OS_mutex_t * mutex){
 		mutex->counter -= 1;
 		if (mutex->counter == 0){		
 			mutex->TCB_pointer = NULL;		
-			OS_notify(mutex);					
+			
+				//Only notify if there are tasks waiting
+				if(mutex->head_waiting_task != NULL){
+					
+					
+					//printf("NOTIFYING");
+					
+					OS_TCB_t * task_to_notify = mutex->head_waiting_task;						
+					
+					//The sempahore then updates the waiting task list (to replace the head)
+					if(mutex->head_waiting_task->next_task_pointer != NULL){
+						mutex->head_waiting_task = mutex->head_waiting_task->next_task_pointer;
+					}
+					else{
+						mutex->head_waiting_task = NULL;
+					}
+					
+			
+					OS_notify(task_to_notify);		
+			}					
 		}
 	}	
 }

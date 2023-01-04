@@ -16,13 +16,17 @@ void OS_circbuffer_init(OS_circbuffer_t * buff){
 	buff->tail = 0;	
 
 
-	//Create the memory pool for the buffer to point to
+	//Create the memory pool for the buffer to store packets in
 	mempool_datapacket_t pool_elements[BUFFSIZE];
-	OS_pool_init(buff->mempool);
 	
-	for(uint_fast8_t i =0; i < BUFFSIZE; ++i){
-		OS_pool_add(buff->mempool, &pool_elements[i]);
+	OS_pool_init(&buff->mempool);
+	
+	
+	for(uint_fast8_t i = 0; i < BUFFSIZE; i++){
+		OS_pool_add(&buff->mempool, &pool_elements[i]);
 	}	
+	
+
 	
 	//Create the mutex and the semaphores
 	OS_mutex_init(&buff->mutex);
@@ -39,8 +43,8 @@ void OS_circbuffer_init(OS_circbuffer_t * buff){
 
 
 
-/* NOTE - CHAR CONST * LIKE ANDY SAID */
-void OS_circbuffer_add(OS_circbuffer_t * buff, char const * data){
+
+void OS_circbuffer_add(OS_circbuffer_t * buff, const uint32_t data){
 
 	//Acquire a semaphore token to resereve a spot in the queue
 	OS_semaphore_acquire(&buff->empty_semaphore);
@@ -49,15 +53,25 @@ void OS_circbuffer_add(OS_circbuffer_t * buff, char const * data){
 	OS_mutex_acquire(&buff->mutex);
 		
 	//First allocate the data to some space in the memory pool
-	mempool_datapacket_t *packet = OS_pool_allocate(buff->mempool);
+	mempool_datapacket_t *packet = OS_pool_allocate(&buff->mempool);
 	//The id is the current task (so the task that is putting the data in the queue)
 	packet->id = (uint32_t) OS_currentTCB();
 	
 	packet->data = data;
 	
 	
+	printf("Actual Packet ID (current TCB): %d \n", (uint32_t) OS_currentTCB());
+	
+	printf("Actual Packet Data: %d \n", data);
+	
+	
 	//Add the pointer to the packet to the queue
 	buff->queue[buff->head] = packet;
+	
+	mempool_datapacket_t *test = buff->queue[buff->head];
+	
+	printf("packet data after entry: %d\n", test->data);
+	
 	
 	//Move the head to the next slot
 	buff->head = (buff->head + 1) % BUFFSIZE;	
@@ -85,11 +99,16 @@ void OS_circbuffer_get(OS_circbuffer_t * buff, mempool_datapacket_t *packet_poin
 	
 	//Dereference the packet and set the packet pointer equal to it
 	mempool_datapacket_t packet = *(mempool_datapacket_t *) buff->queue[buff->tail];
-
+	
+		
+	printf("packet id check: %d \n", packet.id);
+	printf("packet data check: %d \n", packet.data);
+	
+	
 	*packet_pointer = packet;
 	
 	//Free the memory in the memory pool
-	OS_pool_deallocate(buff->mempool, buff->queue[buff->tail]);
+	OS_pool_deallocate(&buff->mempool, buff->queue[buff->tail]);
 	
 	
 	//Move the tail of the buffer

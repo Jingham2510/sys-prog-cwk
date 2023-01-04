@@ -27,7 +27,7 @@ typedef struct circbuffer{
 	uint_fast8_t tail;
 	
 	//The memory which the pointers point to 
-	OS_mempool_t *mempool;	
+	OS_mempool_t mempool;	
 	
 	//semaphore which has a number of tokens equal to the number of empty slots in the queue
 	OS_semaphore_t empty_semaphore;
@@ -48,7 +48,7 @@ void OS_circbuffer_init(OS_circbuffer_t * buff);
 
 
 //Add some data to the circular buffer
-void OS_circbuffer_add(OS_circbuffer_t * buff, char const * data);
+void OS_circbuffer_add(OS_circbuffer_t * buff, const uint32_t data);
 
 
 //Remove a pointer from the cicular buffer - and return the data associated with it 
