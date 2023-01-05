@@ -34,12 +34,12 @@ void OS_mutex_acquire(OS_mutex_t * mutex){
 					mutex->counter += 1;
 			}			
 		}else if(curr_mutex_TCB != OS_currentTCB()){		
-			__CLREX();
+			
 			
 			//Add the task to the waiting task list
 			if(mutex->head_waiting_task == NULL){			
-				mutex->head_waiting_task = OS_currentTCB();			
-			}
+				mutex->head_waiting_task = OS_currentTCB();
+				}
 			else{
 				OS_TCB_t * curr_task = mutex->head_waiting_task;
 				//Go to the last task in the waiting queue

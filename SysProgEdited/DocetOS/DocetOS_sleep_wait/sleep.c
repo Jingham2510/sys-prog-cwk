@@ -8,7 +8,7 @@ void OS_sleep(int32_t sleep_ticks){
 	OS_currentTCB()->data = OS_elapsedTicks() + sleep_ticks;
 	
 	//Set the state yield flag high
-	OS_currentTCB()->state |= TASK_STATE_YIELD; 
+	OS_currentTCB()->state |= TASK_STATE_SLEEP; 
 	
 	//Initiate a task switch
 	OS_yield();

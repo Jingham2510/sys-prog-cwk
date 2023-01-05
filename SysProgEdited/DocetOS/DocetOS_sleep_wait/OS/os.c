@@ -78,7 +78,7 @@ void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func
 	OS_StackFrame_t *sf = (OS_StackFrame_t *)(TCB->sp);
 	memset(sf, 0, sizeof(OS_StackFrame_t));
 	
-	//Initialise the next task pointer as 0 - let the schedulr do the lifting
+	//Initialise the next task pointer as 0 - let the scheduler do the lifting
 	TCB->next_task_pointer = NULL;		
 	
 	/* By placing the address of the task function in pc, and the address of _OS_task_end() in lr, the task

@@ -42,8 +42,8 @@ static OS_TCB_t const * simpleRoundRobin_scheduler(void) {
 	OS_TCB_t * next_task;
 	
 	//Check to see if any task is available to run
-	for (uint_fast8_t j = 1; j <= (task_count - waiting_task_count); j++){
-	
+	for (uint_fast8_t j = 0; j < (task_count - waiting_task_count); j++){		
+		
 		//Check to make sure there is a next task
 		if(curr_task->next_task_pointer == NULL){
 			//If there isnt a next task, loop back to the head task
@@ -51,34 +51,39 @@ static OS_TCB_t const * simpleRoundRobin_scheduler(void) {
 		}
 		else{
 			next_task = curr_task->next_task_pointer;
+			
 		}		
 		
-		//Check to see if the task is sleeping/yielding - as we know none of the tasks are waiting
-		if(next_task->state & TASK_STATE_YIELD){
+		//Check to see if the task is sleeping - as we know none of the tasks are waiting
+		if(next_task->state & TASK_STATE_SLEEP){
+			
+			//printf("TASK SLEEPING: %d\n", next_task);		
+			
+			
 			//If the task is sleeping - check to see if enough time has passed
 			if( (int32_t) (OS_elapsedTicks() - next_task->data) > 0){
-				//Clear the yeild flag and return the task
-				next_task->state &= ~TASK_STATE_YIELD;
+				//Clear the yield flag and return the task
+				next_task->state &= ~TASK_STATE_SLEEP;
+				next_task->data = 0;
 				return next_task;				
-			}			
+			}	
 		}
 		else{
 			//If the task isn't waiting and isn't sleeping return it
+			
 			return next_task;				
 		}	
 	
 	}
 	// No tasks can be ran in the list, so return the idle task
+	//printf("IDLING");
 	return OS_idleTCB_p;
 }
 
 /* 'Add task' callback */
 static void simpleRoundRobin_addTask(OS_TCB_t * const tcb) {
-	if(task_count == 0){
-		head_task = tcb;
-		task_count = task_count + 1;
-	}
-	else if(task_count < SIMPLE_RR_MAX_TASKS){
+
+	if(task_count < SIMPLE_RR_MAX_TASKS){
 		//A boolean to keep track of whether the task has been linked
 		uint_fast8_t linked = 0;
 		
@@ -87,6 +92,14 @@ static void simpleRoundRobin_addTask(OS_TCB_t * const tcb) {
 		
 		while(!linked){		
 				
+				//If there is no head task
+				if(head_task == NULL){
+					head_task = tcb;
+					task_count = task_count + 1;
+					linked = 1;
+					break;
+				}			
+			
 				if(curr_task->next_task_pointer == NULL){
 					curr_task->next_task_pointer = tcb;
 					task_count = task_count + 1;
@@ -150,21 +163,21 @@ static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb) {
 //"wait" task callback
 static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode){
 	
-	
-	if(checkcode == OS_getCheckCode()){	
-
-		
+	if(checkcode == OS_getCheckCode()){		
 
 		OS_TCB_t * curr_task_check = head_task;
 		
 		
 		//Remove the current TCB from the ready task list then update its status		
-		for(uint_fast8_t i = 0; i <task_count; i++){
+		for(uint_fast8_t i = 0; i <task_count - waiting_task_count; i++){
 			//If the task to be waited is the head task
 			if(i == 0){
 				if(OS_currentTCB() == curr_task_check){
 							
 					head_task = OS_currentTCB()->next_task_pointer;
+					
+					curr_task_check->next_task_pointer = NULL;
+					
 					waiting_task_count = waiting_task_count + 1;
 					break;
 				}					
@@ -182,7 +195,10 @@ static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode){
 					waiting_task_count = waiting_task_count + 1;
 					
 					break;
-				}		
+				}
+				else{
+					curr_task_check = curr_task_check->next_task_pointer;
+				}
 				
 				//If the code gets here something bad has happened!!!!!
 				//There is no matching task in the task list that is going to be waited

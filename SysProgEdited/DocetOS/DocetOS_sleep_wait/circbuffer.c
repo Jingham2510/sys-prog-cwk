@@ -6,7 +6,7 @@ void OS_circbuffer_init(OS_circbuffer_t * buff){
 	
 	//Setup the queue to be empty
 	for (uint_fast8_t i = 0; i < BUFFSIZE; ++i){
-		buff->queue[i] = 0;	
+		buff->queue[i] = NULL;	
 	}	
 	
 	//Assign the head to point to the head of the buffer

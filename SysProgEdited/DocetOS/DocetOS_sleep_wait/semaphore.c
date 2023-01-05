@@ -44,11 +44,11 @@ void OS_semaphore_acquire(OS_semaphore_t * semaphore){
 			//Clear the exclusive access flag - we dont edit the token count
 			__CLREX();	
 			
-			
+			//printf("waiting: %d", (uint32_t) OS_currentTCB());
 			
 			//Add the task to the waiting task list
 			if(semaphore->head_waiting_task == NULL){			
-				semaphore->head_waiting_task = OS_currentTCB();			
+				semaphore->head_waiting_task = OS_currentTCB();
 			}
 			else{
 				OS_TCB_t * curr_task = semaphore->head_waiting_task;
