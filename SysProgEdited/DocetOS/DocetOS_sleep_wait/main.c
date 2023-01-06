@@ -24,6 +24,8 @@ static OS_mempool_t mempool;
 
 
 void task1(void const *const args) {
+	
+	
 	OS_mutex_acquire(&mutex);
 	
 	
@@ -43,7 +45,11 @@ void task1(void const *const args) {
 	
 	//printf("-----Packet added-----\n");
 	
+	
+
 	/*
+
+	OS_mutex_acquire(&mutex);
 	
 	OS_pool_init(&mempool);
 	mempool_datapacket_t poolElements[10];
@@ -65,11 +71,11 @@ void task1(void const *const args) {
 	
 	
 	printf("-----Packet added-----\n");
+	
+	
+	OS_mutex_release(&mutex);
+	
 	*/
-	
-	//OS_mutex_release(&mutex);
-	
-	
 	
 	
 	for(uint_fast8_t i = 0; i < 25; i++){
@@ -86,9 +92,9 @@ void task1(void const *const args) {
 
 void task2(void const *const args) {
 	
+	
 	OS_mutex_acquire(&mutex);
-	
-	
+		
 	uint32_t  * RXTEST = (uint32_t *) OS_circbuffer_get(&commsqueue);
 	
 	printf("TEST: %p\n", RXTEST);
@@ -101,19 +107,26 @@ void task2(void const *const args) {
 	
 	
 	
+	
 	OS_mutex_release(&mutex);
 	
 	/*
+	
+	OS_mutex_acquire(&mutex);
+	
+	printf("Mutex acquired");
+	
+	
 	mempool_datapacket_t  * packet_pointer = (mempool_datapacket_t *) OS_circbuffer_get(&commsqueue);
 		
 	printf("Packet pointer: %p\n", packet_pointer);
 	
 	printf("Packet1 ID: %d \n", packet_pointer->id);
 	printf("Packet1 Data: %d \n", packet_pointer->data);
-	*/
 	
+	OS_mutex_release(&mutex);
 
-	
+	*/
 	
 	
 	/*
@@ -195,10 +208,11 @@ int main(void) {
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
 	
+	/*
 	OS_addTask(&TCB3);
 	OS_addTask(&TCB4);
 	OS_addTask(&TCB5);
-	
+	*/
 	OS_mutex_init(&mutex);
 	
 	OS_semaphore_init(&semaphore, 2);
