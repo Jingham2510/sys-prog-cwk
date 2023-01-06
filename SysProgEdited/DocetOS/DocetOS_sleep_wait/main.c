@@ -41,7 +41,7 @@ void task1(void const *const args) {
 	OS_circbuffer_add(&commsqueue, &test);
 	
 	OS_mutex_release(&mutex);
-	OS_sleep(1000);
+	OS_sleephandler(1000);
 	
 	//printf("-----Packet added-----\n");
 	
@@ -79,7 +79,7 @@ void task1(void const *const args) {
 	
 	
 	for(uint_fast8_t i = 0; i < 25; i++){
-		OS_sleep(1000);
+		OS_sleephandler(1000);
 		OS_mutex_acquire(&mutex);
 		printf("Q1\r\n");
 		OS_mutex_release(&mutex);
@@ -91,6 +91,7 @@ void task1(void const *const args) {
 }
 
 void task2(void const *const args) {
+	
 	
 	
 	OS_mutex_acquire(&mutex);
@@ -109,6 +110,8 @@ void task2(void const *const args) {
 	
 	
 	OS_mutex_release(&mutex);
+	
+	
 	
 	/*
 	
@@ -138,6 +141,7 @@ void task2(void const *const args) {
 	*/
 	
 	
+	
 }
 
 
@@ -146,7 +150,8 @@ void task3(void const *const args){
 	OS_semaphore_acquire(&semaphore);
 	
 	for(uint_fast8_t i = 0; i <15; i++){
-		printf("3");		
+		printf("3");
+		OS_sleephandler(15);
 	}
 	
 	OS_semaphore_add_token(&semaphore);
@@ -158,7 +163,8 @@ void task4(void const *const args){
 	OS_semaphore_acquire(&semaphore);
 	
 	for(uint_fast8_t i = 0; i <30; i++){
-		printf("4");		
+		printf("4");
+		OS_sleephandler(5);		
 	}
 	
 	OS_semaphore_add_token(&semaphore);
@@ -171,7 +177,8 @@ void task5(void const *const args){
 	OS_semaphore_acquire(&semaphore);
 	
 	for(uint_fast8_t i = 0; i <10; i++){
-		printf("5");		
+		printf("5");
+		
 	}
 	
 	OS_semaphore_add_token(&semaphore);

@@ -508,16 +508,6 @@
               <FilePath>.\OS\os.c</FilePath>
             </File>
             <File>
-              <FileName>sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\sleep.c</FilePath>
-            </File>
-            <File>
-              <FileName>sleep.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\sleep.h</FilePath>
-            </File>
-            <File>
               <FileName>mutex.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\mutex.h</FilePath>
@@ -566,6 +556,21 @@
               <FileName>fixedPriority.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\fixedPriority.c</FilePath>
+            </File>
+            <File>
+              <FileName>sleephandler.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\sleephandler.h</FilePath>
+            </File>
+            <File>
+              <FileName>sleep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\sleep.c</FilePath>
+            </File>
+            <File>
+              <FileName>sleep.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\sleep.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1089,16 +1094,6 @@
               <FilePath>.\OS\os.c</FilePath>
             </File>
             <File>
-              <FileName>sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\sleep.c</FilePath>
-            </File>
-            <File>
-              <FileName>sleep.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\sleep.h</FilePath>
-            </File>
-            <File>
               <FileName>mutex.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\mutex.h</FilePath>
@@ -1147,6 +1142,21 @@
               <FileName>fixedPriority.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\fixedPriority.c</FilePath>
+            </File>
+            <File>
+              <FileName>sleephandler.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\sleephandler.h</FilePath>
+            </File>
+            <File>
+              <FileName>sleep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\sleep.c</FilePath>
+            </File>
+            <File>
+              <FileName>sleep.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\sleep.h</FilePath>
             </File>
           </Files>
         </Group>

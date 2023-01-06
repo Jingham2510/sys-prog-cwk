@@ -56,12 +56,14 @@ void _svc_OS_schedule(void) {
 void OS_init(OS_Scheduler_t const * scheduler) {
 	_scheduler = scheduler;
 	SCB->CCR |= SCB_CCR_STKALIGN_Msk;
-//    *((uint32_t volatile *)0xE000ED14) |= (1 << 9); // Set STKALIGN
+  //*((uint32_t volatile *)0xE000ED14) |= (1 << 9); // Set STKALIGN
 	ASSERT(_scheduler->scheduler_callback);
 	ASSERT(_scheduler->addtask_callback);
 	ASSERT(_scheduler->taskexit_callback);
 	ASSERT(_scheduler->wait_callback);
 	ASSERT(_scheduler->notify_callback);
+	ASSERT(_scheduler->sleep_callback);
+	ASSERT(_scheduler->wake_callback);
 }
 
 /* Starts the OS and never returns. */
@@ -146,6 +148,19 @@ void _svc_OS_notify(_OS_SVC_StackFrame_t const * const stack){
 	OS_checkcode += 1;
 	_scheduler->notify_callback((OS_TCB_t *) stack->r0);
 	
+}
+
+
+/* SVC handler to sleep a task, invokes a callback to do the work*/
+void _svc_OS_sleep(void){
+	
+	_scheduler->sleep_callback();
+	
+}
+
+/* SVC handler to check if tasks need to be woken, invokes a callback to do the work*/
+void _svc_OS_wake(void){
+	_scheduler->wake_callback();
 }
 
 
