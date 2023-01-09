@@ -36,24 +36,21 @@ void OS_mutex_acquire(OS_mutex_t * mutex){
 		}else if(curr_mutex_TCB != OS_currentTCB()){		
 			
 			
-			//Add the task to the waiting task list -- making sure that it isn't already in there
-			if(mutex->head_waiting_task == NULL || mutex->head_waiting_task != OS_currentTCB()){			
+			//Add the task to the waiting task list
+			if(mutex->head_waiting_task == NULL){			
 				mutex->head_waiting_task = OS_currentTCB();
 				}
 			else{
 				OS_TCB_t * curr_task = mutex->head_waiting_task;
 				//Go to the last task in the waiting queue
-				while(curr_task->next_task_pointer != NULL || curr_task->next_task_pointer != OS_currentTCB()){
-					
-					curr_task = curr_task->next_task_pointer;					
+				while(curr_task->next_task_pointer != NULL){
+					curr_task = curr_task->next_task_pointer;				
 				}
-				curr_task->next_task_pointer = OS_currentTCB();				
+				curr_task->next_task_pointer = OS_currentTCB();			
 			}			
 			
 			
-			OS_wait(mutex, OS_getCheckCode());
-			
-			
+			OS_wait(mutex, OS_getCheckCode());				
 		}else{			
 			__CLREX();			
 			mutex->counter += 1;
