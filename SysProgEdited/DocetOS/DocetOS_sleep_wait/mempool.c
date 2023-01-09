@@ -3,7 +3,7 @@
 //NEED TO ADD CHECKS FOR MAKING SURE THERE IS MEMORY AVAILABLE
 
 
-void OS_pool_init(OS_mempool_t *pool){
+void OS_pool_init(OS_mempool_t * const pool){
 	
 	//Initialise the pool and its mutex
 	pool->head = 0;
@@ -13,7 +13,7 @@ void OS_pool_init(OS_mempool_t *pool){
 }
 
 
-void * OS_pool_allocate(OS_mempool_t *pool){
+void * OS_pool_allocate(OS_mempool_t * const pool){
 
 		//Before the task can claim memory, it needs to get the mutex
 		OS_mutex_acquire(&pool->mutex);
@@ -33,7 +33,7 @@ void * OS_pool_allocate(OS_mempool_t *pool){
 }
 
 
-void OS_pool_deallocate(OS_mempool_t *pool, void *item){
+void OS_pool_deallocate(OS_mempool_t * const pool, void * const item){
 
 	//Acquire the pools mutex so before the pool can be edited
 	OS_mutex_acquire(&pool->mutex);

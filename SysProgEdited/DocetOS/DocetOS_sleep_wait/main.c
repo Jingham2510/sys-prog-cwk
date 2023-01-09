@@ -40,7 +40,12 @@ void task1(void const *const args) {
 	printf("VALUE: %d\n", test);
 	
 	
+	uint32_t test2 = 20;
+	
+	
 	OS_circbuffer_add(&commsqueue, &test);
+	
+	OS_circbuffer_add(&commsqueue, &test2);
 	
 	OS_mutex_release(&mutex);
 	OS_sleep(1000);
@@ -78,20 +83,15 @@ void task1(void const *const args) {
 	OS_mutex_release(&mutex);
 	
 	*/
-	OS_mutex_acquire(&mutex);
 	
-	OS_sleep(4);
+	OS_mutex_acquire(&mutex);	
 		
 	for(uint_fast8_t i = 0; i < 25; i++){
 		OS_sleep(100);		
 		printf("Q1\r\n");				
 	}
 	
-	OS_mutex_release(&mutex);
-	
-	
-	
-	
+	OS_mutex_release(&mutex);	
 }
 
 void task2(void const *const args) {
@@ -101,9 +101,9 @@ void task2(void const *const args) {
 		
 	uint32_t  * RXTEST = (uint32_t *) OS_circbuffer_get(&commsqueue);
 	
-	printf("TEST: %p\n", RXTEST);
+	printf("Recieved Pointer: %p\n", RXTEST);
 	
-	printf("TEST: %d\n", *RXTEST);
+	printf("Recieved Pointer Value: %d\n", *RXTEST);
 	
 	for(uint_fast8_t i = 0; i < *RXTEST; i++){
 			printf("%d\n", i);
@@ -113,6 +113,8 @@ void task2(void const *const args) {
 	OS_addTask(&TCB3);
 	OS_addTask(&TCB4);
 	OS_addTask(&TCB5);
+	
+	OS_sleep(10);
 	OS_semaphore_add_token(&semaphore);
 	
 	

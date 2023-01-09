@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 //Initialies the semaphore structure
-void OS_semaphore_init(OS_semaphore_t * semaphore, uint32_t start_count){
+void OS_semaphore_init(OS_semaphore_t * const semaphore, const uint32_t start_count){
 
 	semaphore->counter = start_count;
 	
@@ -16,7 +16,7 @@ void OS_semaphore_init(OS_semaphore_t * semaphore, uint32_t start_count){
 
 
 //Attempts to acquire a semaphore token from the semaphore pot
-void OS_semaphore_acquire(OS_semaphore_t * semaphore){
+void OS_semaphore_acquire(OS_semaphore_t * const semaphore){
 
 	uint_fast8_t complete = 0;
 
@@ -68,7 +68,7 @@ void OS_semaphore_acquire(OS_semaphore_t * semaphore){
 
 
 //Adds a token to the semaphore pot
-void OS_semaphore_add_token(OS_semaphore_t * semaphore){
+void OS_semaphore_add_token(OS_semaphore_t * const semaphore){
 
 	uint_fast8_t complete = 0;	
 	

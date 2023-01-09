@@ -41,15 +41,15 @@ typedef struct circbuffer{
 
 
 //Initialise the circular buffer
-void OS_circbuffer_init(OS_circbuffer_t * buff);
+void OS_circbuffer_init(OS_circbuffer_t * const buff);
 
 
 //Add some data to the circular buffer
-void OS_circbuffer_add(OS_circbuffer_t * buff, void * pointer_to_add);
+void OS_circbuffer_add(OS_circbuffer_t * const buff, void * const pointer_to_add);
 
 
 //Remove a pointer from the cicular buffer - and return the data associated with it 
-void * OS_circbuffer_get(OS_circbuffer_t * buff);
+void * OS_circbuffer_get(OS_circbuffer_t * const buff);
 
 
 

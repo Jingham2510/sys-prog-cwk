@@ -5,7 +5,7 @@
 
 
 //Initialies a mutex structure
-void OS_mutex_init(OS_mutex_t * mutex){
+void OS_mutex_init(OS_mutex_t * const mutex){
 	
 	mutex->counter = 0;
 	
@@ -18,7 +18,7 @@ void OS_mutex_init(OS_mutex_t * mutex){
 
 
 //Acquires a mutex
-void OS_mutex_acquire(OS_mutex_t * mutex){
+void OS_mutex_acquire(OS_mutex_t * const mutex){
 	
 	uint_fast8_t complete = 0;
 	
@@ -64,7 +64,7 @@ void OS_mutex_acquire(OS_mutex_t * mutex){
 
 
 //Releases a mutex
-void OS_mutex_release(OS_mutex_t * mutex){	
+void OS_mutex_release(OS_mutex_t * const mutex){	
 	
 	if(OS_currentTCB() == mutex->TCB_pointer){		
 		mutex->counter -= 1;

@@ -25,7 +25,7 @@ typedef struct {
 	void (* addtask_callback)(OS_TCB_t * const newTask);
 	void (* taskexit_callback)(OS_TCB_t * const task);
 	void (* wait_callback) (void * const reason, uint32_t checkcode);
-	void (* notify_callback) (OS_TCB_t * const reason);
+	void (* notify_callback) (OS_TCB_t * const task_to_notify);
 } OS_Scheduler_t;
 
 
@@ -79,7 +79,7 @@ void __svc(OS_SVC_YIELD) OS_yield(void);
 void __svc(OS_SVC_WAIT) OS_wait(void * const reason, uint32_t checkcode);
 
 /* SVC delegate to notify tasks */
-void __svc(OS_SVC_NOTIFY) OS_notify(void * const reason);
+void __svc(OS_SVC_NOTIFY) OS_notify(void * const task_to_notify);
 
 /*Returns the OS check code */
 uint32_t OS_getCheckCode(void);

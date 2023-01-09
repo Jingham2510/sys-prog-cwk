@@ -220,7 +220,7 @@ static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode){
 
 
 //"notify" task callback
-static void simpleRoundRobin_notify(OS_TCB_t * task_to_notify){
+static void simpleRoundRobin_notify(OS_TCB_t * const task_to_notify){
 
 	//Update the tasks status flags
 	task_to_notify->data = 0;

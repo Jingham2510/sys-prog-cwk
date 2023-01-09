@@ -2,7 +2,7 @@
 #include <string.h>
 
 
-void OS_circbuffer_init(OS_circbuffer_t * buff){
+void OS_circbuffer_init(OS_circbuffer_t * const buff){
 	
 	//Setup the queue to be empty
 	for (uint_fast8_t i = 0; i < BUFFSIZE; ++i){
@@ -31,7 +31,7 @@ void OS_circbuffer_init(OS_circbuffer_t * buff){
 
 
 
-void OS_circbuffer_add(OS_circbuffer_t * buff, void * pointer_to_add){
+void OS_circbuffer_add(OS_circbuffer_t * const buff, void * const pointer_to_add){
 
 	//Acquire a semaphore token to resereve a spot in the queue
 	OS_semaphore_acquire(&buff->empty_semaphore);
@@ -57,7 +57,7 @@ void OS_circbuffer_add(OS_circbuffer_t * buff, void * pointer_to_add){
 }
 
 
-void * OS_circbuffer_get(OS_circbuffer_t * buff){
+void * OS_circbuffer_get(OS_circbuffer_t * const buff){
 
 	//Get a token to make sure the buffer isnt empty
 	OS_semaphore_acquire(&buff->full_semaphore);
