@@ -47,13 +47,13 @@ void OS_semaphore_acquire(OS_semaphore_t * semaphore){
 			//printf("waiting: %d", (uint32_t) OS_currentTCB());
 			
 			//Add the task to the waiting task list
-			if(semaphore->head_waiting_task == NULL || semaphore->head_waiting_task != OS_currentTCB()){			
+			if(semaphore->head_waiting_task == NULL){			
 				semaphore->head_waiting_task = OS_currentTCB();
 			}
 			else{
 				OS_TCB_t * curr_task = semaphore->head_waiting_task;
 				//Go to the last task in the waiting queue
-				while(curr_task->next_task_pointer != NULL || curr_task->next_task_pointer != OS_currentTCB()){
+				while(curr_task->next_task_pointer != NULL){
 					curr_task = curr_task->next_task_pointer;				
 				}
 				curr_task->next_task_pointer = OS_currentTCB();			
@@ -84,7 +84,7 @@ void OS_semaphore_add_token(OS_semaphore_t * semaphore){
 		if(complete){		
 			
 				//Only notify if there are tasks waiting
-				if(semaphore->head_waiting_task != NULL ){
+				if(semaphore->head_waiting_task != NULL){
 					
 					
 					//printf("NOTIFYING");

@@ -5,7 +5,8 @@
 
 #include "task.h"
 
-
+//Whats the max amount of waiting tasks?
+#define MAX_TASKS
 
 //Definition of a mutex
 typedef struct mutex{

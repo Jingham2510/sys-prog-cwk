@@ -21,6 +21,8 @@ static OS_circbuffer_t commsqueue;
 
 static OS_mempool_t mempool;
 
+static OS_TCB_t TCB3, TCB4, TCB5; 
+
 
 
 void task1(void const *const args) {
@@ -41,7 +43,7 @@ void task1(void const *const args) {
 	OS_circbuffer_add(&commsqueue, &test);
 	
 	OS_mutex_release(&mutex);
-	OS_sleephandler(1000);
+	OS_sleep(1000);
 	
 	//printf("-----Packet added-----\n");
 	
@@ -76,22 +78,23 @@ void task1(void const *const args) {
 	OS_mutex_release(&mutex);
 	
 	*/
+	OS_mutex_acquire(&mutex);
 	
-	
+	OS_sleep(4);
+		
 	for(uint_fast8_t i = 0; i < 25; i++){
-		OS_sleephandler(1000);
-		OS_mutex_acquire(&mutex);
-		printf("Q1\r\n");
-		OS_mutex_release(&mutex);
-				
+		OS_sleep(100);		
+		printf("Q1\r\n");				
 	}
+	
+	OS_mutex_release(&mutex);
+	
 	
 	
 	
 }
 
 void task2(void const *const args) {
-	
 	
 	
 	OS_mutex_acquire(&mutex);
@@ -103,22 +106,23 @@ void task2(void const *const args) {
 	printf("TEST: %d\n", *RXTEST);
 	
 	for(uint_fast8_t i = 0; i < *RXTEST; i++){
-			printf("%d", i);		
+			printf("%d\n", i);
+		
 	}
 	
+	OS_addTask(&TCB3);
+	OS_addTask(&TCB4);
+	OS_addTask(&TCB5);
+	OS_semaphore_add_token(&semaphore);
 	
 	
 	
 	OS_mutex_release(&mutex);
 	
-	
-	
-	/*
-	
+	/*	
 	OS_mutex_acquire(&mutex);
 	
-	printf("Mutex acquired");
-	
+	printf("Mutex acquired");	
 	
 	mempool_datapacket_t  * packet_pointer = (mempool_datapacket_t *) OS_circbuffer_get(&commsqueue);
 		
@@ -128,7 +132,6 @@ void task2(void const *const args) {
 	printf("Packet1 Data: %d \n", packet_pointer->data);
 	
 	OS_mutex_release(&mutex);
-
 	*/
 	
 	
@@ -139,9 +142,7 @@ void task2(void const *const args) {
 		OS_mutex_release(&mutex);		
 	}
 	*/
-	
-	
-	
+		
 }
 
 
@@ -149,9 +150,9 @@ void task3(void const *const args){
 
 	OS_semaphore_acquire(&semaphore);
 	
-	for(uint_fast8_t i = 0; i <15; i++){
-		printf("3");
-		OS_sleephandler(15);
+	for(uint_fast8_t i = 0; i <35; i++){
+		OS_sleep(2);
+		printf("3");		
 	}
 	
 	OS_semaphore_add_token(&semaphore);
@@ -162,13 +163,12 @@ void task4(void const *const args){
 	
 	OS_semaphore_acquire(&semaphore);
 	
-	for(uint_fast8_t i = 0; i <30; i++){
-		printf("4");
-		OS_sleephandler(5);		
+	for(uint_fast8_t i = 0; i <35; i++){
+		OS_sleep(2);
+		printf("4");		
 	}
 	
-	OS_semaphore_add_token(&semaphore);
-	
+	OS_semaphore_add_token(&semaphore);	
 
 }
 
@@ -177,8 +177,8 @@ void task5(void const *const args){
 	OS_semaphore_acquire(&semaphore);
 	
 	for(uint_fast8_t i = 0; i <10; i++){
-		printf("5");
-		
+		OS_sleep(1);
+		printf("5");		
 	}
 	
 	OS_semaphore_add_token(&semaphore);
@@ -200,7 +200,7 @@ int main(void) {
 	   Remember that stacks must be 8-byte aligned. */
 	__align(8)
 	static uint32_t stack1[128], stack2[128], stack3[128], stack4[128], stack5[128];
-	static OS_TCB_t TCB1, TCB2, TCB3, TCB4, TCB5;
+	static OS_TCB_t TCB1, TCB2;
 
 	/* Initialise the TCBs using the  functions above */
 	OS_initialiseTCB(&TCB1, stack1+64, task1, 0);
@@ -215,11 +215,7 @@ int main(void) {
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
 	
-	/*
-	OS_addTask(&TCB3);
-	OS_addTask(&TCB4);
-	OS_addTask(&TCB5);
-	*/
+
 	OS_mutex_init(&mutex);
 	
 	OS_semaphore_init(&semaphore, 2);
