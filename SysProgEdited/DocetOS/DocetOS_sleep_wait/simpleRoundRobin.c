@@ -82,29 +82,31 @@ static OS_TCB_t const * simpleRoundRobin_scheduler(void) {
 static void simpleRoundRobin_addTask(OS_TCB_t * const tcb) {
 
 	if(task_count < SIMPLE_RR_MAX_TASKS){
-		//A boolean to keep track of whether the task has been linked
-		uint_fast8_t linked = 0;
+		//A boolean to keep track of whether the value has been stored atomically
+		uint_fast8_t stored = 0;		
 		
-		//Start the search process at the head task
-		OS_TCB_t * curr_task = head_task;
-		
-		while(!linked){		
+		while(!stored){
+				//A boolean to keep track of whether the task has been linked
+			uint_fast8_t finished = 0;
+			//Start the search process at the head task
+			OS_TCB_t * curr_task = (OS_TCB_t *) __LDREXW(&head_task);
 				
-				//If there is no head task
-				if(head_task == NULL){
-					head_task = tcb;
-					task_count = task_count + 1;
-					linked = 1;
-					break;
-				}			
+			//If there is no head task
+			if(head_task == NULL){
+				stored = !(__STREXW(tcb, &head_task));
+				task_count = task_count + 1;
+				finished = 1; 
+				}		
 			
-				if(curr_task->next_task_pointer == NULL){
-					curr_task->next_task_pointer = tcb;
+			while(!finished){			
+				if(curr_task->next_task_pointer == NULL){					
+					stored = !(__STREXW(tcb, &(curr_task->next_task_pointer)));
 					task_count = task_count + 1;
-					linked = 1;
-				}
-				else{
+					finished = 1;
+					}
+				else{					
 					curr_task = curr_task->next_task_pointer;
+					}
 				}
 			
 			}			
@@ -115,44 +117,51 @@ static void simpleRoundRobin_addTask(OS_TCB_t * const tcb) {
 }
 
 /* 'Task exit' callback */
+// Remove the given TCB from the list of tasks so it won't be run again
 static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb) {
-	// Remove the given TCB from the list of tasks so it won't be run again
+	
 	//Boolean to keep track of when the task has been removed from the link list
-	uint_fast8_t exited = 0;
 	
-	OS_TCB_t * curr_task = head_task;
+	uint_fast8_t stored = 0;
 	
-	while(!exited){			
+	
+	while(!stored){
+	
+		uint_fast8_t exited = 0;
+		OS_TCB_t * curr_task = (OS_TCB_t *) __LDREXW(&head_task);
+		
+		//if the task to be exited is the head task
+		if(curr_task == head_task && curr_task == tcb){					
+			stored = !__STREXW(curr_task->next_task_pointer,&head_task);
+			task_count = task_count - 1;
+			exited = 1;
+		}
+		
+		
+		while(!exited){				
 				
-			//if the task to be exited is the head task
-			if(curr_task == head_task && curr_task == tcb){					
-				head_task = curr_task->next_task_pointer;
-				task_count = task_count - 1;
-				exited = 1;
-			}			
-			
-			//If the next task to be selected is the one to be exited
-			else if(curr_task->next_task_pointer == tcb){				
-				//Change the current tasks next task pointer to the next next task pointer
-				curr_task->next_task_pointer = curr_task->next_task_pointer->next_task_pointer;
-				task_count = task_count - 1;
-				exited = 1;
-			}
-	
-			//If the tasks dont match, go to the next task
-			else{
-				//Make sure the current next task isn't NULL
-				if(curr_task->next_task_pointer != NULL){
-					curr_task = curr_task->next_task_pointer;
+				//If the next task to be selected is the one to be exited
+				if(curr_task->next_task_pointer == tcb){				
+					//Change the current tasks next task pointer to the next next task pointer
+					stored = !__STREXW((curr_task->next_task_pointer->next_task_pointer), &(curr_task->next_task_pointer));
+					task_count = task_count - 1;
+					exited = 1;
 				}
+		
+				//If the tasks dont match, go to the next task
 				else{
-					//Return as there is no matching task to exit
-					return;
-				}				
-				
-			}	
+					//Make sure the current next task isn't NULL
+					if(curr_task->next_task_pointer != NULL){
+						curr_task = curr_task->next_task_pointer;
+					}
+					else{
+						//Return as there is no matching task to exit
+						return;
+					}				
+					
+				}	
+		}
 	}
-	
 
 }
 
@@ -163,48 +172,49 @@ static void simpleRoundRobin_wait(void * const reason, uint32_t checkcode){
 	
 	if(checkcode == OS_getCheckCode()){		
 
-		OS_TCB_t * curr_task_check = head_task;
+		uint_fast8_t stored = 0;
 		
-		
-		//Remove the current TCB from the ready task list then update its status		
-		for(uint_fast8_t i = 0; i <task_count - waiting_task_count; i++){
-			//If the task to be waited is the head task
-			if(i == 0){
-				if(OS_currentTCB() == curr_task_check){
-							
-					head_task = OS_currentTCB()->next_task_pointer;
-					
-					curr_task_check->next_task_pointer = NULL;
-					
-					waiting_task_count = waiting_task_count + 1;
-					break;
-				}					
-			}
-			else{
-				//If the next task is the task to be waited - remove it from the list
-				if(curr_task_check->next_task_pointer == OS_currentTCB()){
-					OS_TCB_t *task_to_remove = curr_task_check->next_task_pointer;
-					
-					//Set the current tasks next pointer to be the task after the task to be removed
-					curr_task_check->next_task_pointer = task_to_remove->next_task_pointer;
-					//Set the task to be removed pointer to be null
-					task_to_remove->next_task_pointer = NULL;
-					
-					waiting_task_count = waiting_task_count + 1;
-					
-					break;
+		while(!stored){
+			
+			OS_TCB_t * curr_task_check = (OS_TCB_t *) __LDREXW(&head_task);			
+			
+			//Remove the current TCB from the ready task list then update its status		
+			for(uint_fast8_t i = 0; i <task_count - waiting_task_count; i++){
+				//If the task to be waited is the head task
+				if(i == 0){
+					if(OS_currentTCB() == curr_task_check){								
+						stored = !__STREXW(OS_currentTCB()->next_task_pointer,&head_task);						
+						curr_task_check->next_task_pointer = NULL;						
+						waiting_task_count = waiting_task_count + 1;						
+					}					
 				}
 				else{
-					curr_task_check = curr_task_check->next_task_pointer;
-				}
-				
-				//If the code gets here something bad has happened!!!!!
-				//There is no matching task in the task list that is going to be waited
-				
-			}		
+					//If the next task is the task to be waited - remove it from the list
+					if(curr_task_check->next_task_pointer == OS_currentTCB()){
+						OS_TCB_t *task_to_remove = curr_task_check->next_task_pointer;
+						
+						//Set the current tasks next pointer to be the task after the task to be removed
+						stored = !__STREXW(task_to_remove->next_task_pointer, &(curr_task_check->next_task_pointer));
+						
+						//Set the task to be removed pointer to be null
+						//Dont need STREXW here because ISRs cannot acquire mutexs/semaphores
+						task_to_remove->next_task_pointer = NULL;
+						
+						waiting_task_count = waiting_task_count + 1;
+						
+						
+					}
+					else{
+						curr_task_check = curr_task_check->next_task_pointer;
+					}
+					
+					//If the code gets here something bad has happened!!!!!
+					//There is no matching task in the task list that is going to be waited
+					
+				}		
+			}
+			
 		}
-		
-	
 		
 		OS_currentTCB()->data = (uint32_t) reason;
 						
@@ -227,23 +237,33 @@ static void simpleRoundRobin_notify(OS_TCB_t * const task_to_notify){
 	
 	task_to_notify->state &= ~TASK_STATE_WAITING;
 	
-	//Put the task back in the ready-task linked list
-	OS_TCB_t * curr_task = head_task;
+	uint_fast8_t stored = 0;
 	
-	//If there are no active tasks
-	if (curr_task == NULL){	
-		head_task = task_to_notify;
-		waiting_task_count = waiting_task_count - 1;
-		return;
+	while(!stored){
+	
+		//Put the task back in the ready-task linked list
+		OS_TCB_t * curr_task = (OS_TCB_t *) __LDREXW(&head_task);
+		
+		uint_fast8_t finished = 0;
+		
+		//If there are no active tasks
+		if (curr_task == NULL){	
+			stored = !__STREXW(task_to_notify ,&head_task);
+			waiting_task_count = waiting_task_count - 1;
+			finished = 1;
+		}
+		
+		while(!finished){
+			//Finds the next slot in the linked list 
+			while(curr_task->next_task_pointer != NULL){
+				curr_task = curr_task->next_task_pointer;	
+			}
+			
+			stored = !__STREXW(task_to_notify ,&(curr_task->next_task_pointer));
+			waiting_task_count = waiting_task_count - 1;
+			finished = 1;
+		}
 	}
-	
-	//Finds the next slot in the linked list 
-	while(curr_task->next_task_pointer != NULL){
-		curr_task = curr_task->next_task_pointer;	
-	}
-	
-	curr_task->next_task_pointer = task_to_notify;
-	waiting_task_count = waiting_task_count - 1;
 	
 }
 
