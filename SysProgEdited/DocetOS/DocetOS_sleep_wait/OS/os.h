@@ -15,9 +15,7 @@ enum OS_SVC_e {
 	OS_SVC_YIELD,
 	OS_SVC_SCHEDULE,
 	OS_SVC_WAIT,
-	OS_SVC_NOTIFY,
-	OS_SVC_SLEEP,
-	OS_SVC_WAKE
+	OS_SVC_NOTIFY
 };
 
 /* A structure to hold callbacks for a scheduler, plus a 'preemptive' flag */
@@ -28,9 +26,6 @@ typedef struct {
 	void (* taskexit_callback)(OS_TCB_t * const task);
 	void (* wait_callback) (void * const reason, uint32_t checkcode);
 	void (* notify_callback) (OS_TCB_t * const task_to_notify);
-	void (* sleep_callback) (void);
-	void (* wake_callback) (void);
-	
 } OS_Scheduler_t;
 
 
@@ -84,14 +79,7 @@ void __svc(OS_SVC_YIELD) OS_yield(void);
 void __svc(OS_SVC_WAIT) OS_wait(void * const reason, uint32_t checkcode);
 
 /* SVC delegate to notify tasks */
-void __svc(OS_SVC_NOTIFY) OS_notify(OS_TCB_t * const reason);
-
-
-/*SVC delegate to sleep tasks */
-void __svc(OS_SVC_SLEEP) OS_sleep(void);
-/*SVC delegate to wake tasks */
-void __svc(OS_SVC_WAKE) OS_wake(void);
-
+void __svc(OS_SVC_NOTIFY) OS_notify(void * const task_to_notify);
 
 /*Returns the OS check code */
 uint32_t OS_getCheckCode(void);

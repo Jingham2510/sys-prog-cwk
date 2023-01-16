@@ -18,7 +18,7 @@ static volatile uint32_t _ticks = 0;
 static OS_Scheduler_t const * _scheduler = 0;
 
 
-/*Holds the current check value */
+/*Holds the current checkcode value */
 static volatile uint32_t OS_checkcode = 0;
 
 /* GLOBAL: Holds pointer to current TCB.  DO NOT MODIFY, EVER. */
@@ -56,14 +56,12 @@ void _svc_OS_schedule(void) {
 void OS_init(OS_Scheduler_t const * scheduler) {
 	_scheduler = scheduler;
 	SCB->CCR |= SCB_CCR_STKALIGN_Msk;
-  //*((uint32_t volatile *)0xE000ED14) |= (1 << 9); // Set STKALIGN
+
 	ASSERT(_scheduler->scheduler_callback);
 	ASSERT(_scheduler->addtask_callback);
 	ASSERT(_scheduler->taskexit_callback);
 	ASSERT(_scheduler->wait_callback);
 	ASSERT(_scheduler->notify_callback);
-	ASSERT(_scheduler->sleep_callback);
-	ASSERT(_scheduler->wake_callback);
 }
 
 /* Starts the OS and never returns. */
@@ -80,7 +78,7 @@ void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func
 	OS_StackFrame_t *sf = (OS_StackFrame_t *)(TCB->sp);
 	memset(sf, 0, sizeof(OS_StackFrame_t));
 	
-	//Initialise the next task pointer as 0 - let the scheduler do the lifting
+	//Initialise the next task pointer as NULL (since it isn't active_task list yet)
 	TCB->next_task_pointer = NULL;		
 	
 	/* By placing the address of the task function in pc, and the address of _OS_task_end() in lr, the task
@@ -135,39 +133,25 @@ void _svc_OS_task_exit(void) {
 
 
 
-/* SVC handler to wait a task. Invokes a callback to do the work. */
+/* SVC handler to wait a task. Invokes the task wait callback to do the work. */
 void _svc_OS_wait(_OS_SVC_StackFrame_t const * const stack){	
 	_scheduler->wait_callback((OS_TCB_t *)stack->r0, (uint32_t)stack->r1);
 
 }
 
-/* SVC handler to notify a task. Invokes a callback to do the work. */
+/* SVC handler to notify a task. Invokes the task notify callback to do the work. */
 void _svc_OS_notify(_OS_SVC_StackFrame_t const * const stack){	
 	
 	//Increment the checkcode
 	OS_checkcode += 1;
+	
 	_scheduler->notify_callback((OS_TCB_t *) stack->r0);
 	
 }
 
-
-/* SVC handler to sleep a task, invokes a callback to do the work*/
-void _svc_OS_sleep(void){
-	
-	_scheduler->sleep_callback();
-	
-}
-
-/* SVC handler to check if tasks need to be woken, invokes a callback to do the work*/
-void _svc_OS_wake(void){
-	_scheduler->wake_callback();
-}
-
-
-uint32_t OS_getCheckCode(void){
-	
-	return OS_checkcode;
-	
+/*REturns the OS checkcode */
+uint32_t OS_getCheckCode(void){	
+	return OS_checkcode;	
 }
 
 

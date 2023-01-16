@@ -5,7 +5,7 @@
 
 
 //Initialies a mutex structure
-void OS_mutex_init(OS_mutex_t * mutex){
+void OS_mutex_init(OS_mutex_t * const mutex){
 	
 	mutex->counter = 0;
 	
@@ -18,80 +18,93 @@ void OS_mutex_init(OS_mutex_t * mutex){
 
 
 //Acquires a mutex
-void OS_mutex_acquire(OS_mutex_t * mutex){
+void OS_mutex_acquire(OS_mutex_t * const mutex){
 	
-	uint_fast8_t complete = 0;
+	uint_fast8_t acquired = 0;
 	
 	//A task attempts to acquire the mutex, which it can only do if the mutex is free	
-	while (!complete){	
+	while (!acquired){	
 		
 		//Exclusive load of the address of the pointer in the mutex (we dont want to load the data)
-		OS_TCB_t *curr_mutex_TCB = (OS_TCB_t *) __LDREXW(&(mutex->TCB_pointer));	
+		OS_TCB_t * curr_mutex_TCB = (OS_TCB_t *) __LDREXW(&(mutex->TCB_pointer));	
 	
 		if (curr_mutex_TCB == 0) {			
-			complete = !(__STREXW(OS_currentTCB(), &(mutex->TCB_pointer)));			
-			if (complete == 1){
-					mutex->counter += 1;
+			acquired = !(__STREXW(OS_currentTCB(), &(mutex->TCB_pointer)));			
+			if (acquired == 1){
+				mutex->counter += 1;
 			}			
-		}else if(curr_mutex_TCB != OS_currentTCB()){		
-			
-			
-			//Add the task to the waiting task list -- making sure that it isn't already in there
-			if(mutex->head_waiting_task == NULL || mutex->head_waiting_task != OS_currentTCB()){			
-				mutex->head_waiting_task = OS_currentTCB();
-				}
-			else{
-				OS_TCB_t * curr_task = mutex->head_waiting_task;
-				//Go to the last task in the waiting queue
-				while(curr_task->next_task_pointer != NULL || curr_task->next_task_pointer != OS_currentTCB()){
-					
-					curr_task = curr_task->next_task_pointer;					
-				}
-				curr_task->next_task_pointer = OS_currentTCB();				
-			}			
-			
-			
-			OS_wait(mutex, OS_getCheckCode());
-			
-			
-		}else{			
-			__CLREX();			
-			mutex->counter += 1;
-			complete = 1;
-			
 		}
-	}
-	
+		//If the task isn't the owner of the mutex
+		else if(curr_mutex_TCB != OS_currentTCB()){		
+			//Clear the exclusive access flag - so we can access the mutex wait list
+			__CLREX();
+			
+			uint_fast8_t stored = 0;
+			
+			while(!stored){
+			
+				OS_TCB_t * curr_waiting_task = (OS_TCB_t *) __LDREXW(&(mutex->head_waiting_task));
+				
+				//Add the task to the waiting task list
+				if(curr_waiting_task == NULL){			
+					stored = !__STREXW(OS_currentTCB() ,&(mutex->head_waiting_task)) ;
+				}
+				else{					
+					//Go to the last task in the waiting queue
+					while(curr_waiting_task->next_task_pointer != NULL){
+						curr_waiting_task = curr_waiting_task->next_task_pointer;				
+					}
+					stored = !__STREXW(OS_currentTCB(), &(curr_waiting_task->next_task_pointer));			
+				}
+			}		
+			
+			OS_wait(mutex, OS_getCheckCode());				
+		}
+		else{			
+			mutex->counter += 1;
+			acquired = 1;
+		}
+	}	
 }
 
 
 
-//Releases a mutex
-void OS_mutex_release(OS_mutex_t * mutex){	
-	
+//Releases a mutex 
+void OS_mutex_release(OS_mutex_t * const mutex){	
+
 	if(OS_currentTCB() == mutex->TCB_pointer){		
 		mutex->counter -= 1;
+		
+		//If the mutex has been fully freed by its owner
 		if (mutex->counter == 0){		
 			mutex->TCB_pointer = NULL;		
-			
+
+			uint_fast8_t stored = 0;
+
+			while(!stored){
+
+				OS_TCB_t * task_to_notify = (OS_TCB_t *) __LDREXW(&(mutex->head_waiting_task));
+
 				//Only notify if there are tasks waiting
-				if(mutex->head_waiting_task != NULL){
-					
-					
-					//printf("NOTIFYING");
-					
-					OS_TCB_t * task_to_notify = mutex->head_waiting_task;						
-					
+				if(task_to_notify != NULL){					
+								
 					//The sempahore then updates the waiting task list (to replace the head)
 					if(mutex->head_waiting_task->next_task_pointer != NULL){
-						mutex->head_waiting_task = mutex->head_waiting_task->next_task_pointer;
+						stored = !__STREXW(task_to_notify->next_task_pointer, &(mutex->head_waiting_task));
 					}
 					else{
-						mutex->head_waiting_task = NULL;
+						stored = !__STREXW(NULL, &(mutex->head_waiting_task));
+					}						
+	
+					//If the task has been safely removed from the list
+					if(stored){
+						OS_notify(task_to_notify);
 					}
-					
-			
-					OS_notify(task_to_notify);		
+				}
+				else{
+					//No task to notify so exit
+					break;
+				}
 			}					
 		}
 	}	

@@ -21,18 +21,20 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.9.0
 Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
-C:\Users\ji629\SysProg_Master\SysProgEdited\DocetOS\DocetOS_sleep_wait\DocetOS_sleep_wait.uvprojx
-Project File Date:  01/06/2023
+C:\Users\ji629\sys-prog-cwk-Jingham2510-safe-branch\SysProgEdited\DocetOS\DocetOS_sleep_wait\DocetOS_sleep_wait.uvprojx
+Project File Date:  01/16/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'c:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'STM32F407 Flash'
+compiling circBuffer.c...
+compiling main.c...
+main.c(19): warning:  #177-D: variable "mempool"  was declared but never referenced
+  static OS_mempool_t mempool;
+main.c: 1 warning, 0 errors
 compiling simpleRoundRobin.c...
-simpleRoundRobin.c(249): warning:  #177-D: variable "curr_task_check"  was declared but never referenced
-  	OS_TCB_t * curr_task_check = head_active_task;
-simpleRoundRobin.c: 1 warning, 0 errors
 linking...
-Program Size: Code=4456 RO-data=524 RW-data=168 ZI-data=4456  
+Program Size: Code=4568 RO-data=516 RW-data=160 ZI-data=4456  
 ".\Flash\DocetOS_sleep_wait.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -44,15 +46,15 @@ Package Vendor: ARM
    * Component: CORE Version: 5.5.0
 
 Package Vendor: Keil
-                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.16.0.pack
-                Keil.STM32F4xx_DFP.2.16.0
+                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.15.0.pack
+                Keil.STM32F4xx_DFP.2.15.0
                 STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
    * Component: Startup Version: 2.6.3
 
 <h2>Collection of Component include folders:</h2>
   .\RTE\_STM32F407_Flash
   C:\KEIL_V5\ARM\PACK\ARM\CMSIS\5.8.0\CMSIS\Core\Include
-  C:\KEIL_V5\ARM\PACK\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+  C:\KEIL_V5\ARM\PACK\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
 
@@ -61,10 +63,10 @@ Package Vendor: Keil
    * Component: Keil::Device:Startup:2.6.3
       Source file:   MDK\Device\Source\ARM\STM32F40xxx_41xxx_OPT.s
       Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f407xx.s
-      Include file:  Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
       Source file:   MDK\Device\Source\ARM\STM32F4xx_OTP.s
+      Include file:  Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
       Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>
