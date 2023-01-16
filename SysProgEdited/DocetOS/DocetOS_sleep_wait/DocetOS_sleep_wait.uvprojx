@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>STM32F303RETx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F3xx_DFP.2.2.2</PackID>
+          <PackID>Keil.STM32F3xx_DFP.2.1.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00010000) IROM(0x08000000,0x00080000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -538,34 +538,24 @@
               <FilePath>.\semaphore.c</FilePath>
             </File>
             <File>
-              <FileName>mempool.h</FileName>
+              <FileName>memPool.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\mempool.h</FilePath>
+              <FilePath>.\memPool.h</FilePath>
             </File>
             <File>
-              <FileName>mempool.c</FileName>
+              <FileName>memPool.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\mempool.c</FilePath>
+              <FilePath>.\memPool.c</FilePath>
             </File>
             <File>
-              <FileName>circbuffer.h</FileName>
+              <FileName>circBuffer.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\circbuffer.h</FilePath>
+              <FilePath>.\circBuffer.h</FilePath>
             </File>
             <File>
-              <FileName>circbuffer.c</FileName>
+              <FileName>circBuffer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\circbuffer.c</FilePath>
-            </File>
-            <File>
-              <FileName>fixedPriority.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\fixedPriority.h</FilePath>
-            </File>
-            <File>
-              <FileName>fixedPriority.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\fixedPriority.c</FilePath>
+              <FilePath>.\circBuffer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -597,7 +587,7 @@
         <TargetCommonOption>
           <Device>STM32F407VGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.16.0</PackID>
+          <PackID>Keil.STM32F4xx_DFP.2.15.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00020000) IRAM2(0x10000000,0x00010000) IROM(0x08000000,0x00100000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -1119,34 +1109,24 @@
               <FilePath>.\semaphore.c</FilePath>
             </File>
             <File>
-              <FileName>mempool.h</FileName>
+              <FileName>memPool.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\mempool.h</FilePath>
+              <FilePath>.\memPool.h</FilePath>
             </File>
             <File>
-              <FileName>mempool.c</FileName>
+              <FileName>memPool.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\mempool.c</FilePath>
+              <FilePath>.\memPool.c</FilePath>
             </File>
             <File>
-              <FileName>circbuffer.h</FileName>
+              <FileName>circBuffer.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\circbuffer.h</FilePath>
+              <FilePath>.\circBuffer.h</FilePath>
             </File>
             <File>
-              <FileName>circbuffer.c</FileName>
+              <FileName>circBuffer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\circbuffer.c</FilePath>
-            </File>
-            <File>
-              <FileName>fixedPriority.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\fixedPriority.h</FilePath>
-            </File>
-            <File>
-              <FileName>fixedPriority.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\fixedPriority.c</FilePath>
+              <FilePath>.\circBuffer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1196,16 +1176,16 @@
     <files>
       <file attr="config" category="source" condition="STM32F303xE ARMCC" name="Drivers\CMSIS\Device\ST\STM32F3xx\Source\Templates\arm\startup_stm32f303xe.s" version="2.3.2">
         <instance index="0">RTE\Device\STM32F303RETx\startup_stm32f303xe.s</instance>
-        <component Cbundle="Standalone" Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.11.3" condition="STM32F3 CMSIS"/>
-        <package name="STM32F3xx_DFP" schemaVersion="1.7.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.2.2"/>
+        <component Cbundle="Standalone" Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="STM32F3 CMSIS"/>
+        <package name="STM32F3xx_DFP" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="2.1.0"/>
         <targetInfos>
           <targetInfo name="STM32F303 Flash"/>
         </targetInfos>
       </file>
       <file attr="config" category="source" name="Drivers\CMSIS\Device\ST\STM32F3xx\Source\Templates\system_stm32f3xx.c" version="2.3.2">
         <instance index="0">RTE\Device\STM32F303RETx\system_stm32f3xx.c</instance>
-        <component Cbundle="Standalone" Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.11.3" condition="STM32F3 CMSIS"/>
-        <package name="STM32F3xx_DFP" schemaVersion="1.7.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.2.2"/>
+        <component Cbundle="Standalone" Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="STM32F3 CMSIS"/>
+        <package name="STM32F3xx_DFP" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="2.1.0"/>
         <targetInfos>
           <targetInfo name="STM32F303 Flash"/>
         </targetInfos>
@@ -1213,7 +1193,7 @@
       <file attr="config" category="source" condition="STM32F407xx_ARMCC" name="Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f407xx.s" version="2.6.2">
         <instance index="0">RTE\Device\STM32F407VGTx\startup_stm32f407xx.s</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="2.6.3" condition="STM32F4 CMSIS"/>
-        <package name="STM32F4xx_DFP" schemaVersion="1.7.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.16.0"/>
+        <package name="STM32F4xx_DFP" schemaVersion="1.6.3" url="http://www.keil.com/pack/" vendor="Keil" version="2.15.0"/>
         <targetInfos>
           <targetInfo name="STM32F407 Flash"/>
         </targetInfos>
@@ -1221,7 +1201,7 @@
       <file attr="config" category="source" name="Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c" version="2.6.2">
         <instance index="0">RTE\Device\STM32F407VGTx\system_stm32f4xx.c</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="2.6.3" condition="STM32F4 CMSIS"/>
-        <package name="STM32F4xx_DFP" schemaVersion="1.7.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.16.0"/>
+        <package name="STM32F4xx_DFP" schemaVersion="1.6.3" url="http://www.keil.com/pack/" vendor="Keil" version="2.15.0"/>
         <targetInfos>
           <targetInfo name="STM32F407 Flash"/>
         </targetInfos>

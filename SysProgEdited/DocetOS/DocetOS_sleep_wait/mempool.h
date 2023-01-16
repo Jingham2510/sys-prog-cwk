@@ -19,11 +19,10 @@ typedef struct {
 
 
 
-
 /* Structure of the memory pool */
 typedef struct mempool{
 	//Head of the memory pool
-	void *head;
+	void * head;
 	//Mutex which protects the pool while memory is being allocated/deallocated
 	OS_mutex_t mutex; 
 }OS_mempool_t;
@@ -38,6 +37,7 @@ void * OS_pool_allocate(OS_mempool_t * const pool);
 void OS_pool_deallocate(OS_mempool_t *const pool, void * const item);
 
 
+//Macro for adding memory to a memory pool
 #define OS_pool_add OS_pool_deallocate
 
 

@@ -26,14 +26,16 @@ void OS_mutex_acquire(OS_mutex_t * const mutex){
 	while (!acquired){	
 		
 		//Exclusive load of the address of the pointer in the mutex (we dont want to load the data)
-		OS_TCB_t *curr_mutex_TCB = (OS_TCB_t *) __LDREXW(&(mutex->TCB_pointer));	
+		OS_TCB_t * curr_mutex_TCB = (OS_TCB_t *) __LDREXW(&(mutex->TCB_pointer));	
 	
 		if (curr_mutex_TCB == 0) {			
 			acquired = !(__STREXW(OS_currentTCB(), &(mutex->TCB_pointer)));			
 			if (acquired == 1){
-					mutex->counter += 1;
+				mutex->counter += 1;
 			}			
-		}else if(curr_mutex_TCB != OS_currentTCB()){		
+		}
+		//If the task isn't the owner of the mutex
+		else if(curr_mutex_TCB != OS_currentTCB()){		
 			//Clear the exclusive access flag - so we can access the mutex wait list
 			__CLREX();
 			
@@ -46,7 +48,7 @@ void OS_mutex_acquire(OS_mutex_t * const mutex){
 				//Add the task to the waiting task list
 				if(curr_waiting_task == NULL){			
 					stored = !__STREXW(OS_currentTCB() ,&(mutex->head_waiting_task)) ;
-					}
+				}
 				else{					
 					//Go to the last task in the waiting queue
 					while(curr_waiting_task->next_task_pointer != NULL){
@@ -54,31 +56,30 @@ void OS_mutex_acquire(OS_mutex_t * const mutex){
 					}
 					stored = !__STREXW(OS_currentTCB(), &(curr_waiting_task->next_task_pointer));			
 				}
-			}			
-			
+			}		
 			
 			OS_wait(mutex, OS_getCheckCode());				
-		}else{			
+		}
+		else{			
 			mutex->counter += 1;
 			acquired = 1;
-			
 		}
-	}
-	
+	}	
 }
 
 
 
-//Releases a mutex
+//Releases a mutex 
 void OS_mutex_release(OS_mutex_t * const mutex){	
 
 	if(OS_currentTCB() == mutex->TCB_pointer){		
 		mutex->counter -= 1;
 		
+		//If the mutex has been fully freed by its owner
 		if (mutex->counter == 0){		
-		mutex->TCB_pointer = NULL;		
+			mutex->TCB_pointer = NULL;		
 
-		uint_fast8_t stored = 0;
+			uint_fast8_t stored = 0;
 
 			while(!stored){
 
@@ -86,9 +87,7 @@ void OS_mutex_release(OS_mutex_t * const mutex){
 
 				//Only notify if there are tasks waiting
 				if(task_to_notify != NULL){					
-
-					//printf("NOTIFYING");											
-
+								
 					//The sempahore then updates the waiting task list (to replace the head)
 					if(mutex->head_waiting_task->next_task_pointer != NULL){
 						stored = !__STREXW(task_to_notify->next_task_pointer, &(mutex->head_waiting_task));

@@ -6,18 +6,15 @@
 #include "mutex.h"
 #include "semaphore.h"
 #include <stm32f4xx.h>
-#include "circbuffer.h"
-#include "mempool.h"
+#include "circBuffer.h"
+#include "memPool.h"
 
 
 static OS_mutex_t mutex;
 
-
 static OS_semaphore_t semaphore;
 
-
-static OS_circbuffer_t commsqueue; 
-
+static OS_circbuffer_t comms_queue;
 
 static OS_mempool_t mempool;
 
@@ -25,13 +22,13 @@ static OS_TCB_t TCB3, TCB4, TCB5;
 
 
 
-void task1(void const *const args) {
+void task1(void const * const args) {
 	
 	
 	OS_mutex_acquire(&mutex);
 	
 	
-	OS_circbuffer_init(&commsqueue);	
+	OS_circbuffer_init(&comms_queue);	
 	
 	
 	uint32_t test = 10;	
@@ -43,16 +40,12 @@ void task1(void const *const args) {
 	uint32_t test2 = 20;
 	
 	
-	OS_circbuffer_add(&commsqueue, &test);
+	OS_circbuffer_add(&comms_queue, &test);
 	
-	OS_circbuffer_add(&commsqueue, &test2);
+	OS_circbuffer_add(&comms_queue, &test2);
 	
 	OS_mutex_release(&mutex);
-	OS_sleep(1000);
-	
-	//printf("-----Packet added-----\n");
-	
-	
+	OS_sleep(1000);	
 
 	/*
 
@@ -74,11 +67,7 @@ void task1(void const *const args) {
 	printf("ID TEST %d \n", packet->id);
 	
 	printf("DATA TEST %d \n", packet->data);
-	OS_circbuffer_add(&commsqueue, packet);	
-	
-	
-	printf("-----Packet added-----\n");
-	
+	OS_circbuffer_add(&comms_queue, packet);	
 	
 	OS_mutex_release(&mutex);
 	
@@ -88,26 +77,29 @@ void task1(void const *const args) {
 		
 	for(uint_fast8_t i = 0; i < 25; i++){
 		OS_sleep(100);		
+		printf("Q1 - Sleep\r\n");				
+	}
+	
+	for(uint_fast8_t i = 0; i < 25; i++){		
 		printf("Q1\r\n");				
 	}
 	
 	OS_mutex_release(&mutex);	
 }
 
-void task2(void const *const args) {
+void task2(void const * const args) {
 	
 	
 	OS_mutex_acquire(&mutex);
 		
-	uint32_t  * RXTEST = (uint32_t *) OS_circbuffer_get(&commsqueue);
+	uint32_t  * RXTEST = (uint32_t *) OS_circbuffer_get(&comms_queue);
 	
 	printf("Recieved Pointer: %p\n", RXTEST);
 	
 	printf("Recieved Pointer Value: %d\n", *RXTEST);
 	
 	for(uint_fast8_t i = 0; i < *RXTEST; i++){
-			printf("%d\n", i);
-		
+			printf("%d\n", i);		
 	}
 	
 	OS_addTask(&TCB3);
@@ -121,12 +113,11 @@ void task2(void const *const args) {
 	
 	OS_mutex_release(&mutex);
 	
+	
 	/*	
 	OS_mutex_acquire(&mutex);
 	
-	printf("Mutex acquired");	
-	
-	mempool_datapacket_t  * packet_pointer = (mempool_datapacket_t *) OS_circbuffer_get(&commsqueue);
+	mempool_datapacket_t  * packet_pointer = (mempool_datapacket_t *) OS_circbuffer_get(&comms_queue);
 		
 	printf("Packet pointer: %p\n", packet_pointer);
 	
@@ -136,19 +127,11 @@ void task2(void const *const args) {
 	OS_mutex_release(&mutex);
 	*/
 	
-	
-	/*
-	while (1) {		
-		OS_mutex_acquire(&mutex);
-		printf("Q2\r\n");
-		OS_mutex_release(&mutex);		
-	}
-	*/
 		
 }
 
 
-void task3(void const *const args){
+void task3(void const * const args){
 
 	OS_semaphore_acquire(&semaphore);
 	
@@ -161,7 +144,7 @@ void task3(void const *const args){
 	
 }
 
-void task4(void const *const args){
+void task4(void const * const args){
 	
 	OS_semaphore_acquire(&semaphore);
 	
@@ -174,7 +157,7 @@ void task4(void const *const args){
 
 }
 
-void task5(void const *const args){
+void task5(void const * const args){
 
 	OS_semaphore_acquire(&semaphore);
 	
@@ -183,9 +166,7 @@ void task5(void const *const args){
 		printf("5");		
 	}
 	
-	OS_semaphore_add_token(&semaphore);
-	
-	
+	OS_semaphore_add_token(&semaphore);	
 }
 	
 
@@ -198,7 +179,7 @@ int main(void) {
 
 	printf("\r\nDocetOS - Systems Assesment - Y3872776\r\n");
 
-	/* Reserve memory for two stacks and two TCBs.
+	/* Reserve memory for five stacks and five TCBs.
 	   Remember that stacks must be 8-byte aligned. */
 	__align(8)
 	static uint32_t stack1[128], stack2[128], stack3[128], stack4[128], stack5[128];
@@ -215,16 +196,11 @@ int main(void) {
 	/* Initialise and start the OS */
 	OS_init(&simpleRoundRobinScheduler);
 	OS_addTask(&TCB1);
-	OS_addTask(&TCB2);
-	
+	OS_addTask(&TCB2);	
 
 	OS_mutex_init(&mutex);
 	
 	OS_semaphore_init(&semaphore, 2);
-
-	
-	
-	
 	
 	
 	OS_start();

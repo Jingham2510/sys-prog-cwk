@@ -5,13 +5,13 @@
 
 #include "task.h"
 
-//Whats the max amount of waiting tasks?
-#define MAX_TASKS
 
 //Definition of a mutex
 typedef struct mutex{
 	
-	OS_TCB_t *TCB_pointer;	
+	//The TCB that "owns" the mutex
+	OS_TCB_t * TCB_pointer;	
+	//The number of times the mutex has been acquired by its owner
 	uint32_t counter;	
 	
 	//The head of the waiting tasks linked list

@@ -5,8 +5,7 @@
 #include "os.h"
 
 
-//What is the max amount of waiting tasks?
-#define SEM_MAX_TASKS 8 
+
 
 
 //Definition of a sempahore

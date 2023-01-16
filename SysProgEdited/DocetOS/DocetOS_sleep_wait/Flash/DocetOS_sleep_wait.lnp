@@ -10,7 +10,6 @@
 ".\flash\semaphore.o"
 ".\flash\mempool.o"
 ".\flash\circbuffer.o"
-".\flash\fixedpriority.o"
 ".\flash\hardfault.o"
 ".\flash\startup_stm32f407xx.o"
 ".\flash\system_stm32f4xx.o"

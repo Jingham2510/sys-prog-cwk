@@ -33,9 +33,7 @@ typedef struct circbuffer{
 	OS_semaphore_t full_semaphore;
 
 	//The mutex stops concurrent modification 
-	OS_mutex_t mutex;
-	
-	
+	OS_mutex_t mutex;	
 
 }OS_circbuffer_t;
 

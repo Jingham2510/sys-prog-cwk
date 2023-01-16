@@ -6,11 +6,9 @@
 //Initialies the semaphore structure
 void OS_semaphore_init(OS_semaphore_t * const semaphore, const uint32_t start_count){
 
-	semaphore->counter = start_count;
+	semaphore->counter = start_count;	
 	
-	
-	semaphore->head_waiting_task = NULL;
-	
+	semaphore->head_waiting_task = NULL;	
 	
 }
 
@@ -25,8 +23,6 @@ void OS_semaphore_acquire(OS_semaphore_t * const semaphore){
 	
 		//Load the current number of tokens in the semaphore and check that it isnt empty
 		uint32_t token_count =  __LDREXW(&(semaphore->counter));
-		
-		//printf("%d", token_count);
 		
 		//If there are tokens left
 		if(token_count > 0){		
@@ -43,8 +39,6 @@ void OS_semaphore_acquire(OS_semaphore_t * const semaphore){
 			__CLREX();
 		
 			uint_fast8_t stored = 0;
-			
-			
 			
 			while(!stored){
 			
@@ -65,7 +59,6 @@ void OS_semaphore_acquire(OS_semaphore_t * const semaphore){
 			}		
 			//Wait the task
 			OS_wait(semaphore, OS_getCheckCode());	
-				
 		}	
 	}
 }
@@ -87,41 +80,33 @@ void OS_semaphore_add_token(OS_semaphore_t * const semaphore){
 		
 		if(complete){	
 
-				uint_fast8_t stored = 0;
+			uint_fast8_t removed = 0;
+		
+			while(!removed){
+		
+				OS_TCB_t * task_to_notify = (OS_TCB_t *) __LDREXW(&(semaphore->head_waiting_task));
 			
-				while(!stored){
-			
-					OS_TCB_t * task_to_notify = (OS_TCB_t *) __LDREXW(&(semaphore->head_waiting_task));
-				
-					//Only notify if there are tasks waiting
-					if(task_to_notify != NULL){					
-							
-						
-						//The sempahore then updates the waiting task list (to replace the head)
-						if(task_to_notify != NULL){
-							stored = !__STREXW(task_to_notify->next_task_pointer, &(semaphore->head_waiting_task));
-						}
-						else{
-							stored = !__STREXW(NULL, &(semaphore->head_waiting_task));
-						}
-						
-						if(stored){
-							OS_notify(task_to_notify);
-						}
+				//Only notify if there are tasks waiting
+				if(task_to_notify != NULL){							
+					
+					//The sempahore then updates the waiting task list (to replace the head)
+					if(task_to_notify != NULL){
+						removed = !__STREXW(task_to_notify->next_task_pointer, &(semaphore->head_waiting_task));
 					}
 					else{
-						//No task to notify so exit
-						break;
+						removed = !__STREXW(NULL, &(semaphore->head_waiting_task));
 					}
+					
+					//If the task has been removed from the waiting lis
+					if(removed){
+						OS_notify(task_to_notify);
+					}
+				}
+				else{
+					//No task to notify so exit
+					break;
+				}
 			}
-		}
-	
+		}	
 	}
-	
-	
-
-
-
-
-
 }

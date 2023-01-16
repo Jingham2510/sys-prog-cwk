@@ -3,12 +3,7 @@
 
 #include <stdint.h>
 
-
-
-
-
 //Requests that the task be idled for the specified number of ticks
 void OS_sleep(int32_t const sleep_ticks);
-
 
 #endif /* SLEEP_H */

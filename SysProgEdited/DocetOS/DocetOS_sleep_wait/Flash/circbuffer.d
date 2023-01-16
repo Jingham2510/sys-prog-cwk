@@ -1,5 +1,5 @@
-.\flash\circbuffer.o: circbuffer.c
-.\flash\circbuffer.o: circbuffer.h
+.\flash\circbuffer.o: circBuffer.c
+.\flash\circbuffer.o: circBuffer.h
 .\flash\circbuffer.o: mutex.h
 .\flash\circbuffer.o: c:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\flash\circbuffer.o: .\OS\task.h
